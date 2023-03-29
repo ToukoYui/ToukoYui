@@ -404,8 +404,8 @@
                     <div class="post-cate">
                         <i class="fa fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E9%9B%86%E5%90%88/" class="post-category" target="_blank">
-                                集合
+                            <a href="/categories/Java/" class="post-category" target="_blank">
+                                Java
                             </a>
                         
                     </div>
@@ -441,13 +441,13 @@
 <p><strong>为方便描述和区分扩容和临界，接下来【数组的容量】指数组的整体长度，【数组的长度】指数组中已经被存放元素的个数(<em>不包含数组初始化时赋值的null</em>)</strong></p>
 </blockquote>
 <p>如果使用指定大小(int)的有参构造，则数组初始化为指定大小；如果有参构造的参数是一个集合，会初始化成一个该传入集合的复制数组。</p>
-<p>扩容机制为原来容量的1.5倍，在数组长度到达容量时（也就是容量的1.0倍）会促发扩容机制，称1.0为临界因子</p>
+<p>扩容机制为原来容量的1.5倍，在数组长度到达容量时（也就是容量的1.0倍）会促发扩容机制，称1.0为加载因子</p>
 <blockquote>
 <p>比如无参构造创建后的数组容量为10，长度到达10后，容量扩容为15</p>
 </blockquote>
 <h3 id="1-2-Vector类"><a href="#1-2-Vector类" class="headerlink" title="1.2 Vector类"></a>1.2 Vector类</h3><p><strong>Vector</strong>也是维护了一个<strong>Object类型的数组</strong>：<strong>Object[] elementData</strong>，和ArrayList类似。但相较于ArrayList，Vector效率不高，但Vector的方法都有<strong>synchronized</strong>修饰，Vector的操作是<strong>线程安全</strong>的。</p>
 <p>Vector的无参构造<strong>直接就将数组初始化为10</strong>。</p>
-<p><strong>扩容机制为原来容量的2倍，临界因子为1.0</strong>。</p>
+<p><strong>扩容机制为原来容量的2倍，加载因子为1.0</strong>。</p>
 <blockquote>
 <p>tips：Vector的操作方法虽然有Synchronized修饰，但只能说是相对线程安全的。</p>
 <p>只能避免多个线程同时操作一个方法，多个线程操作多个方法的时候还是会出问题，这时就需要使用同步代码块解决了</p>
@@ -479,29 +479,135 @@
 </tr>
 </tbody></table>
 <h2 id="2-Set接口"><a href="#2-Set接口" class="headerlink" title="2.Set接口"></a>2.Set接口</h2><h3 id="2-1-HashSet类"><a href="#2-1-HashSet类" class="headerlink" title="2.1 HashSet类"></a>2.1 HashSet类</h3><p>(不可重复，在比较对象时需要重写equals方法)</p>
-<p><strong>HashSet</strong>是通过一个<strong>HashMap实现的</strong>，而<strong>HashMap</strong>的<strong>本质</strong>是个<strong>【数组 &#x2F; 红黑树 + 链表】</strong>，所以存放元素时是<strong>无序</strong>的。</p>
-<p>对HashMap的结构理解如下：</p>
+<p><strong>HashSet</strong>是通过一个<strong>HashMap实现的</strong>，而<strong>HashMap</strong>的<strong>本质</strong>是个<strong>【数组 + 链表 &#x2F; 红黑树】</strong>，所以存放元素时是<strong>无序</strong>的。</p>
+<p><strong>Ⅰ.对HashMap的结构理解如下：</strong></p>
 <ol>
 <li><p>HashMap的本质是一个数组，这个数组的类型是单向<strong>键值对Node</strong>，即：<strong>Node&lt;K,V&gt;[ ] table</strong></p>
 </li>
 <li><p>Node是一个有着<strong>next指针</strong>的节点，因此<strong>table数组的元素是一个Node链表</strong></p>
 </li>
-<li><p>table的索引确认是通过一个哈希函数 hash(key)实现的：</p>
-<p><code>return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);</code></p>
+<li><p>table索引的选择是通过一个哈希函数 hash(key)实现的：</p>
+<p>hash：<code>return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);</code></p>
+<p>index：<code>tab[i = (n - 1) &amp; hash];</code></p>
+<p>将key的hash与数组长度n相与，得到的结果总是会在n内，使得下标不会越界</p>
 </li>
 </ol>
-<p>数组<strong>初始容量是16</strong>，长度到达<strong>容量的0.75倍</strong>（临界因子）也就是 <strong>12</strong> 后 就会扩容成<strong>2倍（32）</strong>；</p>
-<p>而数组的元素：【链表】的长度到达 <strong>8</strong> 后会开启<strong>判断：</strong>如果此时<strong>数组长度 ≥ 64</strong>，<strong>会将链表转化为红黑树</strong>，<strong>如果长度不足64，则扩容数组，重新分配所有元素链表的数组索引。</strong></p>
+<p><strong>Ⅱ.元素添加机制：</strong></p>
+<pre><code>1. 根据元素（key）哈希值定位到Node数组的索引，查看该位置的Node是否为空？
+1. 为空直接赋值，不为空需要判断数组元素的类型：
+1. 如果Node类型是TreeNode(红黑树),就按树的方式遍历，否则就说明已经是条链表，循环使用equals()方法遍历*（这个方法需要重写，按照自己的比较需求设计。毕竟元素可以是String也可以是Object）*，相等则放弃，不相等则在链尾插入
+</code></pre>
+<p><strong>Ⅲ.扩容机制：</strong></p>
+<p>数组<strong>初始容量是16</strong>，<strong>当成功添加的Node数</strong>到达<strong>容量的0.75倍</strong>（加载因子）也就是 <strong>12</strong> 后 就会扩容成<strong>2倍（32）</strong>；</p>
 <blockquote>
-<p> 另外：毕竟是靠HashMap实现的，所以元素是以键：值的形式添加，<strong>k为要添加的元素</strong>，<strong>v为一个空Object【PRESENT】</strong></p>
-<p>【PRESENT】在HashMap是被static final修饰的，所以只有一份内存，每个v都是指向这个空对象</p>
+<p>注意是成功添加的Node数，不管这12个Node是在同一条链表上，还是分散在数组的不同下标，只要添加到了12个，数组就会扩容。</p>
 </blockquote>
-<p>LinkedHashSet（有序）本质是个有顺序的双向链表数组，为了实现顺序性对除next之外每个节点增加before和after两个指针，这两个指针用于实现元素存放的顺序，next用于实现链表的节点连接</p>
-<h3 id="3-HashMap-无序"><a href="#3-HashMap-无序" class="headerlink" title="3.HashMap(无序)"></a>3.HashMap(无序)</h3><p>HashMap本质也是个链表数组，数组长度初始值为16。但在此之上增加了一个EntrySet(存放table数组的引用)，keySet(Set)存放所有键，values(Collection)存放所有值</p>
-<h3 id="4-HashTable"><a href="#4-HashTable" class="headerlink" title="4.HashTable"></a>4.HashTable</h3><p>HashMap本质也是个链表数组，数组长度初始值为11，临界因子为0.75。扩容：2x+1</p>
+<p>而数组的元素：<strong>当【链表】的长度 ≥7 后继续在链尾添加Node会开启</strong>判断：<strong>如果此时</strong>数组长度 ≥ 64<strong>，</strong>会将<strong>这条链表转化为红黑树</strong>；<strong>如果数组容量不足64，则扩容数组，重新分配所有元素链表的数组索引。</strong></p>
+<blockquote>
+<p>注意：当某条链表长度已经≥7了后，在这条链表上加入第8个Node后数组容量要是小于64，就会数组容量直接扩容一倍变32，加入第9个就会从32扩容到64，这种情况是不会考虑加载因子的。</p>
+</blockquote>
+<p>所以可以总结为：当某条链表长度到达8时，数组就会扩容。如果数组容量到达了64，链表就会变为红黑树。链表要转为红黑树的前提是数组容量必须到达64。</p>
+<p><strong>Ⅳ.HashSet与HashMap的关系：</strong></p>
+<blockquote>
+<p> 毕竟是靠HashMap实现的，所以元素是以键：值的形式添加，<strong>k为要添加的元素</strong>，<strong>v为一个空Object【PRESENT】</strong></p>
+<p> PRESENT】在HashMap是被static final修饰的，所以只有一份内存，每个v都是指向这个空对象</p>
+</blockquote>
+<h3 id="2-2-LinkedHashSet类"><a href="#2-2-LinkedHashSet类" class="headerlink" title="2.2 LinkedHashSet类"></a>2.2 LinkedHashSet类</h3><p>LinkedHashSet是HashSet的子类，底层是个LinkedHashMap，本质是个双向链表的数组。</p>
+<p>数组的每个元素都是一条双向链表，但这个双向链表有区别与我们常见的双向链表，因为这种链表的每一个节点上有三个指针：Next、Before、After</p>
+<blockquote>
+<p>实际上这种节点称为Entry，LinkedHashMap.Entry&lt;k,y&gt;是继承自HashMap.Node&lt;k,y&gt;的，为了添加两个新指针，创建了一个子类：Entry类来封装Node类。<strong>这两个新指针是用来保证添加数据的有序性的。</strong></p>
+</blockquote>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">Entry</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> <span class="token keyword">extends</span> <span class="token class-name">HashMap<span class="token punctuation">.</span>Node</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> <span class="token punctuation">{</span>
+    Entry<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> before<span class="token punctuation">,</span> after<span class="token punctuation">;</span>
+    <span class="token function">Entry</span><span class="token punctuation">(</span><span class="token keyword">int</span> hash<span class="token punctuation">,</span> K key<span class="token punctuation">,</span> V value<span class="token punctuation">,</span> Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> next<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">super</span><span class="token punctuation">(</span>hash<span class="token punctuation">,</span> key<span class="token punctuation">,</span> value<span class="token punctuation">,</span> next<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><em><strong>（假设接下来要添加的节点不重复，因此过程中会忽略掉节点的等值检验，实际业务中还是需要根据业务要求重写hashCode和equals方法的）</strong></em></p>
+<p>Next指针和HashSet中一样，用于指向该链表的下一个节点。使用到Next指针的是因为该添加节点的元素哈希值定位到了某个数组索引，遍历该索引里的链表，然后插入链尾。</p>
+<p>可如果要添加的下一个节点在<strong>数组的另一个下标</strong>，但又为了实现LinkedHashSet能够<strong>记住</strong>元素<strong>添加的顺序</strong>，就需要用到<strong>Before和After指针</strong>：</p>
+<ol>
+<li>首先这个新节点1在对应索引下的链表的链尾插入</li>
+<li>然后让上一个添加节点0的After指向新节点1，新节点1的Before指向先前节点0</li>
+</ol>
+<blockquote>
+<p>那么在加入新节点1的时候是怎么找到先前节点0的呢？</p>
+<p>其实在LinkedHashMap中额外存在两个Entry节点：head和tail，</p>
+<ul>
+<li>head用于记录这个LinkedHashSet的入口节点</li>
+<li>tail记录着这个LinkedHashSet的最后添加的Entry节点。</li>
+</ul>
+<p>因此每次要找到上一个节点的话，直接从tail拿就可以了。遍历LinkedHashSet的话也会从head开始访问。</p>
+</blockquote>
+<p>对除next之外每个节点增加before和after两个指针，这两个指针用于实现元素存放的顺序，next用于实现链表的节点连接</p>
+<h3 id="小总结：-1"><a href="#小总结：-1" class="headerlink" title="小总结："></a>小总结：</h3><p>HashSet和LinkedHashSet都是基于HashMap实现的，存放的元素都是不重复的。</p>
+<p>差别在于底层分别是一个单向链表数组和双向链表数组，而且HashSet的元素无序，LinkedHashSet的元素有序</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">底层结构</th>
+<th align="center">分布性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">HashSet</td>
+<td align="center">单向链表数组</td>
+<td align="center">无序</td>
+</tr>
+<tr>
+<td align="center">LinkedHashSet</td>
+<td align="center">双向链表数组</td>
+<td align="center">有序</td>
+</tr>
+<tr>
+<td align="center">TreeSet</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<h1 id="3-Map接口"><a href="#3-Map接口" class="headerlink" title="3.Map接口"></a>3.Map接口</h1><h2 id="1-HashMap类"><a href="#1-HashMap类" class="headerlink" title="1.HashMap类"></a>1.HashMap类</h2><p>HashMap的底层和扩容实际上已经在HashSet中讲得差不多了，但需要补充的是HashMap中存在着一个叫<strong>【EntrySet&lt;Map.Entry&lt;K,V&gt;&gt;】</strong>的内部类，这个内部类值得好好讲讲。</p>
+<p><strong>重点：设计EntrySet这个类的目的就是为了方便遍历散列表</strong>，遍历的例子如下：</p>
+<pre class=" language-java"><code class="language-java">HashMap<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Integer<span class="token operator">></span> map <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span>Map<span class="token punctuation">.</span>Entry entry  <span class="token operator">:</span>  map<span class="token punctuation">.</span><span class="token function">entrySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      Object key <span class="token operator">=</span> entry<span class="token punctuation">.</span><span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      Object value <span class="token operator">=</span> entry<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>首先这个内部类EntrySet存储的元素是<strong>Map.Entry&lt;K,V&gt;</strong>,可以通过<strong>调用HashMap的entrySet（）方法获得</strong>。</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> Set<span class="token operator">&lt;</span>Map<span class="token punctuation">.</span>Entry<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">>></span> <span class="token function">entrySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    Set<span class="token operator">&lt;</span>Map<span class="token punctuation">.</span>Entry<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">>></span> es<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>es <span class="token operator">=</span> entrySet<span class="token punctuation">)</span> <span class="token operator">==</span> null <span class="token operator">?</span> <span class="token punctuation">(</span>entrySet <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">EntrySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">:</span> es<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>而这个Map.Entry是Map接口的一个内部接口，但在HashMap中可以理解为Node，HashMap会将Map.Entry<strong>向下转换</strong>成Node。</p>
+<p>为什么能转换？因为HashMap的<strong>底层【table】</strong>中<strong>存储的Node&lt;K,V&gt;<strong>就是</strong>实现的Map.Entry</strong>，因此每个Map.Entry指向的就是table中的Node。</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">Node</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> <span class="token keyword">implements</span> <span class="token class-name">Map<span class="token punctuation">.</span>Entry</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">final</span> <span class="token keyword">int</span> hash<span class="token punctuation">;</span>
+    <span class="token keyword">final</span> K key<span class="token punctuation">;</span>
+    V value<span class="token punctuation">;</span>
+    Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> next<span class="token punctuation">;</span>
+
+    <span class="token function">Node</span><span class="token punctuation">(</span><span class="token keyword">int</span> hash<span class="token punctuation">,</span> K key<span class="token punctuation">,</span> V value<span class="token punctuation">,</span> Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> next<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>hash <span class="token operator">=</span> hash<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>key <span class="token operator">=</span> key<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>value <span class="token operator">=</span> value<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>next <span class="token operator">=</span> next<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+</code></pre>
+<p>那已经存在了Node，为什么还要用新的Map.Entry来指向Node呢？</p>
+<p>因为Map.Entry接口中还有两个抽象方法：getKey（）和getValue（）</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">interface</span> <span class="token class-name">Entry</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span> V<span class="token operator">></span> <span class="token punctuation">{</span>
+    K <span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    V <span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>这两个方法Node是没有的，Map.Entry能够通过这两个get方法直接获取到这个键值对的键和值，这也就是为什么说<strong>设计的目的就是为了方便遍历散列表</strong>。</p>
+<h2 id="2-HashTable"><a href="#2-HashTable" class="headerlink" title="2.HashTable"></a>2.HashTable</h2><p>HashMap本质也是个链表数组，数组长度初始值为11，加载因子为0.75。扩容：2x+1</p>
 <p>key和value不允许为null，同步线程安全 </p>
 <p>但在此之上增加了一个EntrySet(存放table数组的引用)，keySet(Set)存放所有键，values(Collection)存放所有值。</p>
-<h1 id="3-Map接口"><a href="#3-Map接口" class="headerlink" title="3.Map接口"></a>3.Map接口</h1><h2 id="3-1"><a href="#3-1" class="headerlink" title="3.1"></a>3.1</h2>
+
             </div>
             <hr/>
 
