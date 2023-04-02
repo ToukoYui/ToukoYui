@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="集合的底层逻辑, 流浪秃球计划">
+    <meta name="keywords" content="Java集合的底层逻辑, 流浪秃球计划">
     <meta name="description" content="1.集合的体系Java集合总的分为两种：单列集合（Collection）和双列集合（Map），继承关系如下：
 
 
@@ -16,7 +16,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>集合的底层逻辑 | 流浪秃球计划</title>
+    <title>Java集合的底层逻辑 | 流浪秃球计划</title>
     <link rel="icon" type="image/png" href="/medias/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -290,13 +290,13 @@
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/11.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        集合的底层逻辑
+                        Java集合的底层逻辑
                     </div>
                 </div>
             </div>
@@ -463,6 +463,7 @@
 <th align="center">底层结构</th>
 <th align="center">增删效率</th>
 <th align="center">改查效率</th>
+<th align="center">线程安全性</th>
 </tr>
 </thead>
 <tbody><tr>
@@ -470,12 +471,21 @@
 <td align="center">可扩容的数组</td>
 <td align="center">较低，通过数组扩容</td>
 <td align="center">较高</td>
+<td align="center">不安全</td>
 </tr>
 <tr>
 <td align="center">LinkedList</td>
 <td align="center">双向链表</td>
 <td align="center">较高，通过链表节点的追加或插入</td>
 <td align="center">较低</td>
+<td align="center">不安全</td>
+</tr>
+<tr>
+<td align="center">Vector</td>
+<td align="center">可扩容的数组</td>
+<td align="center">较低，通过数组扩容</td>
+<td align="center">低于ArrayList</td>
+<td align="center">安全</td>
 </tr>
 </tbody></table>
 <h2 id="2-Set接口"><a href="#2-Set接口" class="headerlink" title="2.Set接口"></a>2.Set接口</h2><h3 id="2-1-HashSet类"><a href="#2-1-HashSet类" class="headerlink" title="2.1 HashSet类"></a>2.1 HashSet类</h3><p>(不可重复，在比较对象时需要重写equals方法)</p>
@@ -493,18 +503,19 @@
 </li>
 </ol>
 <p><strong>Ⅱ.元素添加机制：</strong></p>
-<pre><code>1. 根据元素（key）哈希值定位到Node数组的索引，查看该位置的Node是否为空？
-1. 为空直接赋值，不为空需要判断数组元素的类型：
-1. 如果Node类型是TreeNode(红黑树),就按树的方式遍历，否则就说明已经是条链表，循环使用equals()方法遍历*（这个方法需要重写，按照自己的比较需求设计。毕竟元素可以是String也可以是Object）*，相等则放弃，不相等则在链尾插入
-</code></pre>
+<ol>
+<li>根据元素（key）哈希值定位到Node数组的索引，查看该位置的Node是否为空？</li>
+<li>为空直接赋值，不为空需要判断数组元素的类型：</li>
+<li>如果Node类型是TreeNode(红黑树),就按树的方式遍历，否则就说明已经是条链表，循环使用equals()方法遍历<em>（这个方法需要重写，按照自己的比较需求设计。毕竟元素可以是String也可以是Object）</em>，相等则放弃，不相等则在链尾插入</li>
+</ol>
 <p><strong>Ⅲ.扩容机制：</strong></p>
-<p>数组<strong>初始容量是16</strong>，<strong>当成功添加的Node数</strong>到达<strong>容量的0.75倍</strong>（加载因子）也就是 <strong>12</strong> 后 就会扩容成<strong>2倍（32）</strong>；</p>
+<p>数组<strong>初始容量是16</strong>，<strong>当成功添加的Node数</strong>到达<strong>容量的0.75倍</strong>（加载因子）也就是 <strong>12</strong> 后，就会扩容成<strong>2倍（32）</strong>；</p>
 <blockquote>
 <p>注意是成功添加的Node数，不管这12个Node是在同一条链表上，还是分散在数组的不同下标，只要添加到了12个，数组就会扩容。</p>
 </blockquote>
 <p>而数组的元素：<strong>当【链表】的长度 ≥7 后继续在链尾添加Node会开启</strong>判断：<strong>如果此时</strong>数组长度 ≥ 64<strong>，</strong>会将<strong>这条链表转化为红黑树</strong>；<strong>如果数组容量不足64，则扩容数组，重新分配所有元素链表的数组索引。</strong></p>
 <blockquote>
-<p>注意：当某条链表长度已经≥7了后，在这条链表上加入第8个Node后数组容量要是小于64，就会数组容量直接扩容一倍变32，加入第9个就会从32扩容到64，这种情况是不会考虑加载因子的。</p>
+<p>注意：当某条链表长度已经≥7了后，在这条链表上加入第8个Node后数组容量要是小于64，数组容量就会直接扩容一倍变32，加入第9个就会从32扩容到64，这种情况是不会考虑加载因子的。</p>
 </blockquote>
 <p>所以可以总结为：当某条链表长度到达8时，数组就会扩容。如果数组容量到达了64，链表就会变为红黑树。链表要转为红黑树的前提是数组容量必须到达64。</p>
 <p><strong>Ⅳ.HashSet与HashMap的关系：</strong></p>
@@ -541,6 +552,7 @@
 <p>因此每次要找到上一个节点的话，直接从tail拿就可以了。遍历LinkedHashSet的话也会从head开始访问。</p>
 </blockquote>
 <p>对除next之外每个节点增加before和after两个指针，这两个指针用于实现元素存放的顺序，next用于实现链表的节点连接</p>
+<h3 id="2-3-TreeSet类"><a href="#2-3-TreeSet类" class="headerlink" title="2.3 TreeSet类"></a>2.3 TreeSet类</h3><p>TreeSet是靠TreeMap实现的，区别在于TreeSet的key是加入的值，而value是指向一个空对象PRESENRT，具体了解看TreeMap，这里不多赘述。</p>
 <h3 id="小总结：-1"><a href="#小总结：-1" class="headerlink" title="小总结："></a>小总结：</h3><p>HashSet和LinkedHashSet都是基于HashMap实现的，存放的元素都是不重复的。</p>
 <p>差别在于底层分别是一个单向链表数组和双向链表数组，而且HashSet的元素无序，LinkedHashSet的元素有序</p>
 <table>
@@ -575,7 +587,7 @@
       Object value <span class="token operator">=</span> entry<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p>首先这个内部类EntrySet存储的元素是<strong>Map.Entry&lt;K,V&gt;</strong>,可以通过<strong>调用HashMap的entrySet（）方法获得</strong>。</p>
+<p>首先这个内部类EntrySet存储的元素是<strong>Map.Entry&lt;K,V&gt;</strong>,可以通过<strong>调用HashMap的entrySet（）方法获得</strong>，实例名叫entrySet。</p>
 <pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> Set<span class="token operator">&lt;</span>Map<span class="token punctuation">.</span>Entry<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">>></span> <span class="token function">entrySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     Set<span class="token operator">&lt;</span>Map<span class="token punctuation">.</span>Entry<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">>></span> es<span class="token punctuation">;</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>es <span class="token operator">=</span> entrySet<span class="token punctuation">)</span> <span class="token operator">==</span> null <span class="token operator">?</span> <span class="token punctuation">(</span>entrySet <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">EntrySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">:</span> es<span class="token punctuation">;</span>
@@ -597,16 +609,66 @@
     <span class="token punctuation">}</span>
 </code></pre>
 <p>那已经存在了Node，为什么还要用新的Map.Entry来指向Node呢？</p>
-<p>因为Map.Entry接口中还有两个抽象方法：getKey（）和getValue（）</p>
+<p>因为相较于Node，Map.Entry接口中还有两个抽象方法：getKey（）和getValue（）</p>
 <pre class=" language-java"><code class="language-java"><span class="token keyword">interface</span> <span class="token class-name">Entry</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span> V<span class="token operator">></span> <span class="token punctuation">{</span>
     K <span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     V <span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p>这两个方法Node是没有的，Map.Entry能够通过这两个get方法直接获取到这个键值对的键和值，这也就是为什么说<strong>设计的目的就是为了方便遍历散列表</strong>。</p>
-<h2 id="2-HashTable"><a href="#2-HashTable" class="headerlink" title="2.HashTable"></a>2.HashTable</h2><p>HashMap本质也是个链表数组，数组长度初始值为11，加载因子为0.75。扩容：2x+1</p>
-<p>key和value不允许为null，同步线程安全 </p>
-<p>但在此之上增加了一个EntrySet(存放table数组的引用)，keySet(Set)存放所有键，values(Collection)存放所有值。</p>
+<p>这两个方法Node是没有的，Map.Entry能够通过这两个get方法直接获取到这个键值对的键和值，这也就是为什么说 <strong>设计EntrySet这个类的目的就是为了方便遍历散列表</strong>。</p>
+<blockquote>
+<p>除此之外，HashMap中还存在一个keySet（）方法可以得到key的Set集合，一个values（）可以得到vaule的Collection集合</p>
+</blockquote>
+<h2 id="2-Hashtable类"><a href="#2-Hashtable类" class="headerlink" title="2.Hashtable类"></a>2.Hashtable类</h2><p>Hashtable和HashMap类似，本质也是个链表数组，<strong>但key和value不允许为null</strong>，<strong>线程安全</strong> </p>
+<p>数组容量初始值为11，加载因子为0.75。扩容：2x+1，第一轮扩容：长度到达8，容量扩容到23</p>
+<blockquote>
+<p>但Hashtable底层只是链表数组，链表不会树化，而且如果要添加新节点在链表上时，采用的是头插法</p>
+</blockquote>
+<h2 id="3-TreeMap"><a href="#3-TreeMap" class="headerlink" title="3.TreeMap"></a>3.TreeMap</h2><p>TreeMap的底层是一颗<strong>红黑树</strong>，由一个个<strong>树节点【Entry】</strong>构成，Entry中包括了左右子树的指针和父节点指针，外加一个判断节点颜色的布尔值（<strong>BLACK：false，RED：true</strong>）。</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">class</span> <span class="token class-name">Entry</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> <span class="token keyword">implements</span> <span class="token class-name">Map<span class="token punctuation">.</span>Entry</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> <span class="token punctuation">{</span>
+    K key<span class="token punctuation">;</span>
+    V value<span class="token punctuation">;</span>
+    Entry<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> left<span class="token punctuation">;</span>
+    Entry<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> right<span class="token punctuation">;</span>
+    Entry<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> parent<span class="token punctuation">;</span>
+    <span class="token keyword">boolean</span> color <span class="token operator">=</span> BLACK<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> 
+</code></pre>
+<p>由于红黑树是一颗自平衡的二叉查找树，插入的节点位置都在树的底部。因此TreeMap需要一个比较器【Comparator】来确定插入节点的位置来保持红黑树的平衡性。当我们使用HashTree的无参构造时，会默认生成一个按插入节点的key的字典序排序的比较器。</p>
+<p>若插入节点发现该数为空，则新节点为根节点；若不为空，有以下步骤：</p>
+<ol>
+<li>判断comparator是否为空，为空创建一个默认比较器，不为空则使用传入的自定义比较器。</li>
+<li>按照比较器的规则遍历红黑树，直到遍历到叶子节点的父节点（红黑树的所有叶子节点都为null），确定新节点是父节点的左节点还是右节点。<strong>如果发现存在key相等的情况，会替换value，而key不会替换，然后return旧值value。</strong></li>
+<li>然后进入<strong>【fixAfterInsertion（）】</strong>，根据插入的情况进行相关的染色、左旋和右旋等操作来保持红黑树的性质。</li>
+</ol>
+<h2 id="小总结：-2"><a href="#小总结：-2" class="headerlink" title="小总结："></a>小总结：</h2><table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">底层结构</th>
+<th align="center">插入新节点方法</th>
+<th align="center">线程安全性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">HashMap</td>
+<td align="center">【数组】+【链表&#x2F;红黑树]</td>
+<td align="center">链表尾插法</td>
+<td align="center">不安全</td>
+</tr>
+<tr>
+<td align="center">Hashtable</td>
+<td align="center">【数组】+【链表】</td>
+<td align="center">链表头插法</td>
+<td align="center">安全</td>
+</tr>
+<tr>
+<td align="center">TreeMap</td>
+<td align="center">【红黑树】</td>
+<td align="center">二叉搜索树的遍历至底部插入</td>
+<td align="center">不安全</td>
+</tr>
+</tbody></table>
 
             </div>
             <hr/>
@@ -630,7 +692,7 @@
                     </span>
                     <a href="http://example.com" class="b-link-green">流浪秃球计划</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2022/11/18/%E9%9B%86%E5%90%88%E7%9A%84%E5%BA%95%E5%B1%82%E9%80%BB%E8%BE%91/" class="b-link-green">集合的底层逻辑</a>
+                    <a href="/2022/11/18/%E9%9B%86%E5%90%88%E7%9A%84%E5%BA%95%E5%B1%82%E9%80%BB%E8%BE%91/" class="b-link-green">Java集合的底层逻辑</a>
                 </p>
             </div>
         </div>
