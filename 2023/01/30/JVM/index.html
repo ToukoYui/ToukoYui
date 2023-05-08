@@ -500,8 +500,19 @@ Java源代码进行编译会被转化为二进制字节码（JVM指令）
 <blockquote>
 <p>  前三条定义后a、b、ab三个字符串常量就会被存入串池中，执行第四句时由于是字符串变量拼接，会先调用StringBuilder拼接后再new一个String对象接收其拼接值，所以s3和s4是两个不同的地址。</p>
 <p>  而s5虽然看起来是两个字符串常量拼接，但实际和s3一样，都是从串池中取得ab，所以s3和s5的地址都是同一个。</p>
-<p>  另外：Stringxxx.intern()可以把该对象的字符串尝试放入串池，如果串池中存在该字符串则不会放入，如果没有则入串池，会把串池的字符串返回。</p>
 </blockquote>
+<p>另外：Stringxxx.intern()会尝试把该对象的字符串尝试放入串池，</p>
+<p>在jdk6中，如果存在则然后返回串池中的该对象；如果串池中不存在该字符串对象，则加入串池，然后返回串池中的该对象</p>
+<p>而在jdk7中，由于串池移到堆中，如果串池中存在该对象，则返回串池的对象；如果串池中不存在该字符串对象，则加入串池，然后返回堆中的该字符串引用（毕竟串池就在堆中，就）</p>
+<pre class=" language-java"><code class="language-java">String s3 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//堆中有"1"、"11"对象，池中只有"1"对象</span>
+String intern <span class="token operator">=</span> s3<span class="token punctuation">.</span><span class="token function">intern</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//池中不存在"11",所以将堆中的"11"加入池中,此时池中有"1"、"11"对象</span>
+<span class="token comment" spellcheck="true">//intern()会返回堆中的"11"对象，所以变量intern是堆中的"11"的引用，因此 intern==s3</span>
+System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>s3 <span class="token operator">==</span> intern<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+String s4 <span class="token operator">=</span> <span class="token string">"11"</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//此时因为intern()的缘故，串池中存在"11"，s4是拿的堆中的“11”对象引用，因此s3==s4</span>
+System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>s3 <span class="token operator">==</span> s4<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
 <h3 id="6-直接内存"><a href="#6-直接内存" class="headerlink" title="6.直接内存"></a>6.直接内存</h3><p><img src="/../images/image-20230210225227846.png" alt="image-20230210225227846"></p>
 <blockquote>
 <p>首先要知道的是，Java本身是做不到读写操作的。JVM在继续I&#x2F;O操作的流程如上图：CPU首先从用户态也就是Java程序调用一些native方法进入到内核态继续读写，然后再返回到用户态。</p>
