@@ -4,12 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Springboot理论知识点, 流浪秃球计划">
-    <meta name="description" content="1.如何理解 IOC 和 DI ？Ioc：inversion of control（控制反转）
-它是一种控制思想，将创建对象的控制权转交给Spring容器
-
-何为控制：指的是对象创建的权力
-何为反转：创建对象的权力由开发者手中转交给IOC容">
+    <meta name="keywords" content="JavaSE的易遗漏知识点整理, 流浪秃球计划">
+    <meta name="description" content="1.HashMap和ConcurrentHashMap的区别ConcurrentHashMap相比前者，它是能够保证线程安全的。在1.7时，它在hashmap上加了个维度，其实是个二维的哈希表，它把一个个hashmap视为一个个Segmen">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +13,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Springboot理论知识点 | 流浪秃球计划</title>
+    <title>JavaSE的易遗漏知识点整理 | 流浪秃球计划</title>
     <link rel="icon" type="image/png" href="/medias/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -291,13 +287,13 @@
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/23.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        Springboot理论知识点
+                        JavaSE的易遗漏知识点整理
                     </div>
                 </div>
             </div>
@@ -389,10 +385,6 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/Springboot/" target="_blank">
-                                <span class="chip bg-color">Springboot</span>
-                            </a>
-                        
                             <a href="/tags/Java/" target="_blank">
                                 <span class="chip bg-color">Java</span>
                             </a>
@@ -417,7 +409,7 @@
             <div class="post-info">
                 <div class="post-date info-break-policy">
                     <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-05-18
+                    2023-05-22
                 </div>
 
                 
@@ -433,86 +425,133 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="1-如何理解-IOC-和-DI-？"><a href="#1-如何理解-IOC-和-DI-？" class="headerlink" title="1.如何理解 IOC 和 DI ？"></a>1.如何理解 IOC 和 DI ？</h3><p><strong>Ioc：inversion of control（控制反转）</strong></p>
-<p>它是一种控制思想，将创建对象的控制权转交给Spring容器</p>
+                <h3 id="1-HashMap和ConcurrentHashMap的区别"><a href="#1-HashMap和ConcurrentHashMap的区别" class="headerlink" title="1.HashMap和ConcurrentHashMap的区别"></a>1.HashMap和ConcurrentHashMap的区别</h3><p>ConcurrentHashMap相比前者，它是能够保证线程安全的。在1.7时，它在hashmap上加了个维度，其实是个二维的哈希表，它把一个个hashmap视为一个个Segment，通过key的哈希函数找到对应的段后对段进行加锁，这样相比对整个集合加锁，其他的段也能够被读写，它这个加锁的级别是段级的。</p>
+<p>但在1.8后，就把锁的粒度给减小到hashmap的数组元素级别了，不再采用段加锁的方法，而是直接对数组下的链表或红黑树加锁，当put一个元素时，如果数组为空，就按CAS原则加入，如果产生了哈希冲突，就对这个链表进行Synchronized加锁</p>
+<h3 id="2-说下Synchronized"><a href="#2-说下Synchronized" class="headerlink" title="2.说下Synchronized"></a>2.说下Synchronized</h3><p>Synchronized中的锁有4种状态：无锁、偏向锁、轻向锁、重量锁</p>
 <ul>
-<li>何为控制：指的是对象创建的权力</li>
-<li>何为反转：创建对象的权力由开发者手中转交给IOC容器，开发者获取对象由主动转为被动获取</li>
+<li>偏向锁：当一个线程访问同步块并获取锁时，最先会拿到偏向锁，会在对象头的Mark Word中存储该线程的id，进行CAS判断操作，而接下来的每次加锁和解锁就不需要CAS操作，而是直接通过判断Mark Word中是否存在该线程id。也就是同一个线程下，后续访问中都能自动获取锁。</li>
+<li>轻向锁：当一个线程获得某个同步块的偏向锁时，其他线程也像获取时，偏向锁就会升级为轻向锁。在当前线程的栈帧中建立一个名为锁记录（Lock Record）的空间，将Mark Word复制到锁记录的空间中，然后将Mark Word改为指向锁记录的指针</li>
+<li>重量级锁：当线程A持有轻向锁时，其他线程也想获得会开始自旋等待，但是当自选到一定次数后轻向锁就会升级为重量锁。对于想要获取被重量锁加锁的同步块的其他线程，其他线程都会被阻塞，重量锁的加锁和解锁（也就是线程的阻塞和唤醒）需要不断在用户态和内核态中切换，需要消耗大量的系统资源</li>
 </ul>
-<p><strong>DI: dependency Injection（依赖注入）</strong></p>
-<p>DI是IOC的一种实现方式，是指IOC容器在运行期间，动态地将依赖对象注入到需要对象之中。</p>
-<p> IoC 和 DI 是从不同的角度的描述的同一件事情，IOC是从开发者的视角，而DI是从IOC容器的视角来说</p>
-<h3 id="2-Bean注解、-Component注解和-Configuration注解的关系？"><a href="#2-Bean注解、-Component注解和-Configuration注解的关系？" class="headerlink" title="2.@Bean注解、@Component注解和@Configuration注解的关系？"></a>2.@Bean注解、@Component注解和@Configuration注解的关系？</h3><ul>
-<li>@Bean注解是加在方法上的，而@Component注解是加在类上的</li>
+<h3 id="3-java中抽象类和接口的区别？"><a href="#3-java中抽象类和接口的区别？" class="headerlink" title="3.java中抽象类和接口的区别？"></a>3.java中抽象类和接口的区别？</h3><ul>
+<li><p>接口是一种特殊的抽象类</p>
+</li>
+<li><p>构造方法：抽象类可以有构造方法，而接口没有</p>
+</li>
+<li><p>方法：抽象类可以有抽象方法也可以有普通方法，而接口只能有抽象方法，并且抽象方法不能被实现</p>
+</li>
+<li><p>修饰符：接口的变量默认public static final修饰，方法默认public abstract修饰</p>
+</li>
+<li><p>继承：非抽象类只能单继承抽象类，接口能够实现多继承</p>
+</li>
+<li><p>应用场景：抽象类用于表示这个对象是什么，接口用于表示这个对象能做什么</p>
+</li>
+<li><p><strong>抽象类：某个问题需要子类除了需要重写父类的abstract的方法，还需要从父类继承变量或者重写重要的非abstract方法，就考虑abstract类</strong></p>
+<p>​    <strong>接口：某个问题不需要继承，只需要很多子类给出重复的abstract方法的具体实现细节，就用接口</strong></p>
+</li>
 </ul>
-<p>​		通常是通过类路径扫描来自动侦测以及自动装配到Spring容器中,可以在启动类使用<code>@ComponentScan</code>注解指定类路径		后，会扫描并注册 指定路径下被@Component注解的类 到容器中</p>
+<h3 id="4-什么是线程安全？如何实现线程安全？"><a href="#4-什么是线程安全？如何实现线程安全？" class="headerlink" title="4.什么是线程安全？如何实现线程安全？"></a>4.什么是线程安全？如何实现线程安全？</h3><p><strong>当多个线程访问一个共享变量或对象时，能够按我们设想的正确获得共享数据，那么他就是线程安全的。</strong></p>
+<p><strong>实现：</strong></p>
 <ul>
-<li>@Configuration注解基于@Componet注解，该注解加在类上，一般作用于配置类，表明在一个类里可以声明一个或多个Bean方法</li>
-<li>@Component注解有多个修饰注解，这些注解都可以将类声明为bean：<ul>
-<li><code>@Component</code> ：通用的注解，可标注任意类为 Spring 的组件。如果一个 Bean 不知道属于哪个层，可以使用 <code>@Component</code> 注解标注。</li>
-<li><code>@Repository</code> ：对应持久层即 Dao 层，主要用于数据库的 Dao 相关操作。</li>
-<li><code>@Service</code> ：对应服务层，主要设计一些复杂的逻辑，从中调用 Dao 层。</li>
-<li><code>@Controller</code> ：对应 Spring MVC 控制层，主要用来接受用户请求并调用 Service 层返回数据给前端页面。</li>
-<li><code>@Configuration</code> ：声明该类为一个配置类，可以在此类中声明一个或多个 <code>@Bean</code> 方法。</li>
-</ul>
+<li><p>通过阻塞同步，也就是互斥同步。比如synchronized关键字创建同步锁；</p>
+</li>
+<li><p>通过非阻塞同步，比如CAS操作：通过三个值：一个我们需要访问的值所在的内存地址V，一个旧的期待值，一个新的期待值；我们访问的内存地址V获得这个值，判断这个值是否等于旧期待值，如果等于用新值替换。不如不符合就失败，返回最新的值</p>
+<p><em>java.util.concurrent.atomic包下的原子操作类就是基于CAS实现的</em></p>
+</li>
+<li><p>线程本地存储：将共享数据限制在可见的范围中，比如ThreadLocal类</p>
 </li>
 </ul>
-<h3 id="3-Autowire注解和-Resource注解的区别？"><a href="#3-Autowire注解和-Resource注解的区别？" class="headerlink" title="3.@Autowire注解和@Resource注解的区别？"></a>3.@Autowire注解和@Resource注解的区别？</h3><ul>
-<li>@Autowire：默认按数据类型来装配，默认情况下要求被依赖注入的对象必须存在</li>
-<li>@Resource：默认按数据的名称来装配，当找不到与名称相配的bean时会按类型装配</li>
-</ul>
-<h3 id="4-Bean有哪些作用域？"><a href="#4-Bean有哪些作用域？" class="headerlink" title="4.Bean有哪些作用域？"></a>4.Bean有哪些作用域？</h3><ul>
-<li><strong>singleton：</strong>单例作用域，在IOC容器中仅会存在一个实例，每次从中获取该Bean的话都是拿的同一个实例</li>
-<li><strong>prototype：</strong>原型作用域，每次获取实例时，容器都会返回一个新的实例</li>
-<li><strong>request：</strong>请求作用域，每次开始一次Http请求会都创建一个新的实例，实例在请求处理完后会及时的销毁</li>
-<li>session：会话作用域，同一个Http Session会话共享一个Bean，不同的Session使用不同的bean，对其他Session不可见</li>
-<li><strong>application：</strong>全局作用域，限定Bean是在<code>ServletContext</code>的生命周期（级别）</li>
-</ul>
-<h3 id="5-如何理解AOP？"><a href="#5-如何理解AOP？" class="headerlink" title="5.如何理解AOP？"></a>5.如何理解AOP？</h3><p>AOP：Aspect Orient Progress，面向切面编程。AOP的作用就是将那些与实际业务逻辑无关，但是很多业务模块中要用到的代码（公共行为）封装到一个模块，在需要时切入使用。从而减少大量的重复代码。</p>
+<h3 id="5-什么是ThreadLocal？"><a href="#5-什么是ThreadLocal？" class="headerlink" title="5.什么是ThreadLocal？"></a>5.什么是ThreadLocal？</h3><p>能够使一个变量是线程隔离的，该变量对其他线程而言是封闭且隔离的。在threadlocal类中有一个ThreadLocalMap用来存储数据，它实际上是Thread类中的一个map，也就是说这个mao是每个线程各自独有的一份副本，map中的key是ThreadLocal对象，而value就是我们要存储的线程隔离的值。因此我们每次如果想实现一个线程隔离的值的话，每次就需要创建一个ThreadLocal来set</p>
+<h3 id="6-Serializable接口的作用？"><a href="#6-Serializable接口的作用？" class="headerlink" title="6.Serializable接口的作用？"></a>6.Serializable接口的作用？</h3><p>类通过实现Serializable接口能够实现序列化或反序列化，当我们需要将内存中的java对象进行传输或存储的时候，就需要将对象进行序列化。</p>
+<p>序列化之后，就可以把序列化后的内容写入磁盘，或者通过网络传输到别的机器上。等要用到的时候将反序列化回Java对象。但这时对象的地址是改变了的</p>
+<h3 id="7-volatile关键字的作用？"><a href="#7-volatile关键字的作用？" class="headerlink" title="7.volatile关键字的作用？"></a>7.volatile关键字的作用？</h3><p>被volatile修饰的变量在被修改时是直接将修改结果写入主存（内存）中的，读取的时候也是直接从主存读取不从cpu的高速缓存读取。它能够保证在多线程场景下的变量在操作时能够得到正确的结果</p>
+<h3 id="8-jdbc的连接步骤？"><a href="#8-jdbc的连接步骤？" class="headerlink" title="8.jdbc的连接步骤？"></a>8.jdbc的连接步骤？</h3><p>先通过反射加载数据库驱动，然后根据驱动管理类创建一个连接对象，调用连接对象的Statement方法存入sql然后执行</p>
+<h3 id="9-静态代理和动态代理的区别？"><a href="#9-静态代理和动态代理的区别？" class="headerlink" title="9.静态代理和动态代理的区别？"></a>9.静态代理和动态代理的区别？</h3><p>首先需要什么是代理模式：</p>
+<p>代理模式是常用的结构型设计模式之一，某一个对象提供一个代理，并由代理对象控制原对象的引用。代理对象在客户端和目标对象之间起到中介作用。</p>
+<p><strong>静态代理：</strong>通过创建一个【实现了目标接口的代理类】充当客户对象和目标对象的中介，在代理类中提供调用目标对象的方法，而由客户对象来执行代理类进而实现间接调用目标对象方法</p>
+<p>动态代理：动态代理在创建代理对象上更加的灵活，由Java反射机制动态产生。它会根据需要，通过反射机制在程序运行期，动态的为目标对象创建代理对象。动态代理又分为 jdk代理 和 CGLIB代理两种动态代理方法：</p>
+<p><strong>JDK代理：</strong></p>
+<p><strong>JDK代理是基于目标接口进行代理的。</strong>主要有两个重要的接口和类：一个是<code>InvocationHandler</code>(Interface)、另一个则是 <code>Proxy</code>(Class)。</p>
+<p>首先创建一个代理工厂类，工厂类中通过Proxy类的newProxyInstance方法创建一个代理对象，其中创建参数需要创建一个InvocationHandler接口，然后实现一个invoke方法，在invoke方法中进行目标方法的反射调用。</p>
+<p>但在这个代理工厂类并不是代理类，代理类是运行时在内存中创建的，代理对象调用接口的实现方法，实际上时在调用这个代理对象的实现方法，而这个实现方法又去调用调用对象的InvocationHandler接口中的invoke方法。所以说代理对象本身只是定义了反射方法，但本身并没有调用权限，是需要代理类去调用的。</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 通过销售站代理类实现火车站销售火车票的JDK代理案例</span>
+<span class="token keyword">public</span> SellTickets <span class="token function">getProxyObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//返回代理对象</span>
+        <span class="token comment" spellcheck="true">/*
+            ClassLoader loader : 类加载器，用于加载代理类。可以通过目标对象获取类加载器
+            Class&lt;?>[] interfaces ： 代理类实现的接口的字节码对象
+            InvocationHandler h ： 代理对象的调用处理程序
+         */</span>
+
+        SellTickets proxyObject <span class="token operator">=</span> <span class="token punctuation">(</span>SellTickets<span class="token punctuation">)</span>Proxy<span class="token punctuation">.</span><span class="token function">newProxyInstance</span><span class="token punctuation">(</span>
+                station<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getClassLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                station<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getInterfaces</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token keyword">new</span> <span class="token class-name">InvocationHandler</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+                    <span class="token comment" spellcheck="true">/*
+                        Object proxy : 代理对象。和proxyObject对象是同一个对象，在invoke方法中基本不用
+                        Method method ： 对接口中的方法进行封装的method对象
+                        Object[] args ： 调用方法的实际参数
+
+                        返回值： 方法的返回值。
+                     */</span>
+                    <span class="token annotation punctuation">@Override</span>
+                    <span class="token keyword">public</span> Object <span class="token function">invoke</span><span class="token punctuation">(</span>Object proxy<span class="token punctuation">,</span> Method method<span class="token punctuation">,</span> Object<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> Throwable <span class="token punctuation">{</span>
+                        <span class="token comment" spellcheck="true">//System.out.println("invoke方法执行了");</span>
+                        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"代售点收取一定的服务费用(jdk动态代理)"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token comment" spellcheck="true">//执行目标对象的方法</span>
+                        Object obj <span class="token operator">=</span> method<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>station<span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//调用方法的返回值</span>
+                        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>method<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token keyword">return</span> obj<span class="token punctuation">;</span>
+                    <span class="token punctuation">}</span>
+                <span class="token punctuation">}</span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> proxyObject<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+</code></pre>
+<p><strong>CGLIB代理：</strong></p>
+<p><strong>CGLIB代理是基于继承代理类进行代理的。</strong>对代理对象类的class文件加载进来，通过修改其字节码来生成子类，并在子类中采用方法拦截的技术拦截所有父类方法的调用，顺势织入横切逻辑。</p>
+<p>因为CGLIB是通过继承目标类来重写其方法来实现的，故而如果是final和private方法则无法被重写，也就是无法被代理</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 通过销售站代理类实现火车站销售火车票的CGLIB代理案例</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProxyFactory</span> <span class="token keyword">implements</span> <span class="token class-name">MethodInterceptor</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">//声明火车站对象</span>
+    <span class="token keyword">private</span> TrainStation station <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">TrainStation</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> TrainStation <span class="token function">getProxyObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//创建Enhancer对象，类似于JDK代理中的Proxy类</span>
+        Enhancer enhancer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Enhancer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//设置父类的字节码对象。指定父类</span>
+        enhancer<span class="token punctuation">.</span><span class="token function">setSuperclass</span><span class="token punctuation">(</span>TrainStation<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//设置回调函数</span>
+        enhancer<span class="token punctuation">.</span><span class="token function">setCallback</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//创建代理对象</span>
+        TrainStation proxyObject <span class="token operator">=</span> <span class="token punctuation">(</span>TrainStation<span class="token punctuation">)</span> enhancer<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> proxyObject<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Object <span class="token function">intercept</span><span class="token punctuation">(</span>Object o<span class="token punctuation">,</span> Method method<span class="token punctuation">,</span> Object<span class="token punctuation">[</span><span class="token punctuation">]</span> objects<span class="token punctuation">,</span> MethodProxy methodProxy<span class="token punctuation">)</span> <span class="token keyword">throws</span> Throwable <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//System.out.println("方法执行了");</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"代售点收取一定的服务费用(CGLib代理)"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//要调用目标对象的方法</span>
+        Object obj <span class="token operator">=</span> method<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>station<span class="token punctuation">,</span> objects<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> obj<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
 <ul>
-<li><p><strong>连接点 Joinpoint：</strong>程序执行过程中的任意位置。方法的执行前后，异常抛出之后等位置。</p>
+<li><p>静态代理和动态代理的区别：</p>
+<p>​	静态代理中，接口每新增一个抽象方法，除了所有实现类需要实现这个方法外，所有代理类也需要实现此方法（毕竟代理类也是实现了接口），增加了代码维护的复杂度。</p>
+<p>​	动态代理中代理工厂不需要实现接口，动态根据接口情况来生成代理类，所以不会出现该问题。接口中声明的所有方法都被转移到调用处理器一个集中的方法中处理</p>
 </li>
-<li><p><strong>切点 Pointcut：</strong>在程序执行流程中，<strong>被织入</strong>的方法。（一个切点可以对应多个连接点）。需要在哪个方法执行前后进行织入，哪个方法就是切入点</p>
-</li>
-<li><p><strong>通知 Advice：</strong>通知又叫增强，就是具体你要<strong>织入</strong>的代码方法。</p>
-<p>通知包括：</p>
-<ul>
-<li>前置通知：@Before ，切点也就是被织入的方法执行完前会执行通知</li>
-<li>后置通知：@After，切点执行后会执行通知</li>
-<li>环绕通知：@Round，可以自行决定通知执行的时机</li>
-<li>异常通知：@AfterThrowing，切点执行抛出异常后才会执行通知</li>
-<li>返回通知：@AfterReturning，切点执行正常返回后才会执行通知</li>
-</ul>
-</li>
-<li><p><strong>切面 Aspect：</strong> <strong>切点 + 通知就是切面</strong>，通常在一个类上加上@Aspect注解表明这是一个切面，在类中进行切点和通知设计</p>
-</li>
-<li><p>织入 Weaving：把通知应用到目标对象上的过程。</p>
-</li>
-<li><p>代理对象 Proxy：一个目标对象被织入通知后产生的新对象。</p>
+<li><p>JDK代理和CGLIB代理的区别：</p>
 </li>
 </ul>
-<h3 id="6-对SpringMVC的理解？"><a href="#6-对SpringMVC的理解？" class="headerlink" title="6.对SpringMVC的理解？"></a>6.对SpringMVC的理解？</h3><p>MVC是一种三层架构：</p>
-<ul>
-<li>Model：数据层，主要职责就是处理数据，比如Service&#x2F;DAO层面的东西</li>
-<li>View：视图层，负责将Model层处理好的数据渲染后返回给前端</li>
-<li>Controller：控制层，主要负责处理请求数据的接发和解析，然后将数据交由Model层处理</li>
-</ul>
-<h3 id="7-SpringMVC的组件和执行流程？"><a href="#7-SpringMVC的组件和执行流程？" class="headerlink" title="7.SpringMVC的组件和执行流程？"></a>7.SpringMVC的组件和执行流程？</h3><p><strong>Spring MVC框架是围绕DispatcherServlet来设计的，这个Servlet会把请求分发给各个处理器</strong></p>
-<ul>
-<li>DispatcherServlet：Servlet调度器，将来自用户的请求进行调度分发给各个处理器</li>
-<li>HandlerMapping：映射处理器，每个进来的请求都需要对应的处理器负责处理，如何找到对应的处理器就是映射处理器的职责</li>
-<li>HandleAdapter：处理适配器，HandlerMapping和Handle之间的桥梁，HandlerMapping找到对应的Handler后，调度器会将参数交由HandleAdapter封装发送给Handler处理</li>
-<li>Handler：处理器，接收并处理来自适配器的封装数据，返回一个ModelAndView对象</li>
-<li>ViewResolver：视图解析器，接收并处理ModelAndView对象，返回一个View对象</li>
-</ul>
-<p><strong>执行流程：</strong></p>
-<ol>
-<li>DispatcherServlet拿着接收到的前端请求对应URL，让HandlerMapping找到具体的Handler，返回给DispatcherServlet</li>
-<li>DispatcherServlet调用HandleAdapter进行数据封装，适配器然后去请求Handler处理，处理得到一个ModelAndView对象</li>
-<li>DispatcherServlet拿着这个对象传给ViewResolver进行解析，解析完成得到一个具体的视图View</li>
-<li>之后DispatcherServlet将这个View进行渲染响应给前端</li>
-</ol>
-<h3 id="（待更）"><a href="#（待更）" class="headerlink" title="（待更）"></a>（待更）</h3>
+<p>​			jdk代理基于目标接口，创建一个实现目标接口的实现类并通过反射机制来实现代理，而cglib代理基于继承目标类，通过修改目标类的字节码来创建一个目标类的子类来代理</p>
+<p>​		在jdk6、jdk7、jdk8逐步对JDK动态代理优化之后，在调用次数较少的情况下，JDK代理效率高于CGLIB代理效率，只有当进行大量调用的时候，jdk6和jdk7比CGLIB代理效率低一点，但是到jdk8的时候，jdk代理效率高于CGLIB代理。</p>
+<p>​		</p>
+
             </div>
             <hr/>
 
@@ -535,7 +574,7 @@
                     </span>
                     <a href="http://example.com" class="b-link-green">流浪秃球计划</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2023/05/18/Springboot%E7%9A%84%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86%E7%82%B9/" class="b-link-green">Springboot理论知识点</a>
+                    <a href="/2023/05/22/Java%E7%9A%84%E6%98%93%E9%81%97%E6%BC%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/" class="b-link-green">JavaSE的易遗漏知识点整理</a>
                 </p>
             </div>
         </div>
@@ -556,9 +595,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2023/05/22/Java%E7%9A%84%E6%98%93%E9%81%97%E6%BC%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/">
                     <div class="card-image">
@@ -572,9 +612,9 @@
                 <div class="card-content article-content">
                     <div class="summary">1.HashMap和ConcurrentHashMap的区别ConcurrentHashMap相比前者，它是能够保证线程安全的。在1.7时，它在hashmap上加了个维度，其实是个二维的哈希表，它把一个个hashmap视为一个个Segmen</div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2023-05-22
-                        </span>
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2023-05-22
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-bookmark fa-fw icon-category"></i>
@@ -587,6 +627,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -605,20 +646,24 @@
                 下一篇&nbsp;<i class="fa fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2023/05/17/Springboot%E5%AE%9E%E6%93%8D%E7%9F%A5%E8%AF%86%E7%82%B9/">
+                <a href="/2023/05/18/Springboot%E7%9A%84%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86%E7%82%B9/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="Springboot实操知识点">
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="Springboot理论知识点">
                         
-                        <span class="card-title">Springboot实操知识点</span>
+                        <span class="card-title">Springboot理论知识点</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">1.@Configuration和@Component的区别？实际上Configuration本质就是component，Configuration修饰的类中带有Bean注解的方法都会被动态代理，调用时的实例是同一个，而Component每</div>
+                    <div class="summary">1.如何理解 IOC 和 DI ？Ioc：inversion of control（控制反转）
+它是一种控制思想，将创建对象的控制权转交给Spring容器
+
+何为控制：指的是对象创建的权力
+何为反转：创建对象的权力由开发者手中转交给IOC容</div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2023-05-17
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2023-05-18
                             </span>
                         <span class="publish-author">
                             
