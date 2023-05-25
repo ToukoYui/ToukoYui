@@ -472,8 +472,8 @@
 <p>动态代理：动态代理在创建代理对象上更加的灵活，由Java反射机制动态产生。它会根据需要，通过反射机制在程序运行期，动态的为目标对象创建代理对象。动态代理又分为 jdk代理 和 CGLIB代理两种动态代理方法：</p>
 <p><strong>JDK代理：</strong></p>
 <p><strong>JDK代理是基于目标接口进行代理的。</strong>主要有两个重要的接口和类：一个是<code>InvocationHandler</code>(Interface)、另一个则是 <code>Proxy</code>(Class)。</p>
-<p>首先创建一个代理工厂类，工厂类中通过Proxy类的newProxyInstance方法创建一个代理对象，其中创建参数需要创建一个InvocationHandler接口，然后实现一个invoke方法，在invoke方法中进行目标方法的反射调用。</p>
-<p>但在这个代理工厂类并不是代理类，代理类是运行时在内存中创建的，代理对象调用接口的实现方法，实际上时在调用这个代理对象的实现方法，而这个实现方法又去调用调用对象的InvocationHandler接口中的invoke方法。所以说代理对象本身只是定义了反射方法，但本身并没有调用权限，是需要代理类去调用的。</p>
+<p>首先创建一个代理工厂类，工厂类中通过Proxy类的newProxyInstance静态方法创建一个代理对象，其中创建参数需要创建一个InvocationHandler接口，然后实现一个invoke方法，在invoke方法中进行目标方法的反射调用。</p>
+<p>但在这个代理工厂类并不是代理类，代理类是运行时在内存中创建的，代理对象调用接口的实现方法，实际上时在调用这个代理类的实现方法，而这个实现方法又去调用调用对象的InvocationHandler接口中的invoke方法。所以说代理对象本身只是定义了反射方法，但本身并没有调用权限，是需要代理类去调用的。</p>
 <pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 通过销售站代理类实现火车站销售火车票的JDK代理案例</span>
 <span class="token keyword">public</span> SellTickets <span class="token function">getProxyObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
         <span class="token comment" spellcheck="true">//返回代理对象</span>
@@ -551,6 +551,68 @@
 <p>​			jdk代理基于目标接口，创建一个实现目标接口的实现类并通过反射机制来实现代理，而cglib代理基于继承目标类，通过修改目标类的字节码来创建一个目标类的子类来代理</p>
 <p>​		在jdk6、jdk7、jdk8逐步对JDK动态代理优化之后，在调用次数较少的情况下，JDK代理效率高于CGLIB代理效率，只有当进行大量调用的时候，jdk6和jdk7比CGLIB代理效率低一点，但是到jdk8的时候，jdk代理效率高于CGLIB代理。</p>
 <p>​		</p>
+<h3 id="10-为什么String不可变？"><a href="#10-为什么String不可变？" class="headerlink" title="10.为什么String不可变？"></a>10.为什么String不可变？</h3><pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">final</span> <span class="token keyword">class</span> <span class="token class-name">String</span> <span class="token keyword">implements</span> <span class="token class-name">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span>Serializable</span><span class="token punctuation">,</span> Comparable<span class="token operator">&lt;</span>String<span class="token operator">></span><span class="token punctuation">,</span> CharSequence <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">char</span> value<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//...</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong><del>因为String的底层存储变量value是final修饰的，不可变。</del></strong></p>
+<p>这种说法是错误的：因为final修饰的变量，如果是基础变量的话值不可变，引用变量的话指针的指向不可变。</p>
+<p>数组其实是引用类型，因此String中的value数组是不能指向别的变量，里面的元素是可以改变的。</p>
+<p><strong>正确的说法应该是：value数组被private修饰，是私有的，但同时String类并不提供public方法供外部修改，比如setter方法</strong>，所以String不可变</p>
+<p>但其实我们可以通过反射的方法获取String类中的value字段来修改：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">stringChange</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> IllegalAccessException<span class="token punctuation">,</span> NoSuchFieldException <span class="token punctuation">{</span>
+    String strObj <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span><span class="token string">"aaa"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"反射执行前字符串："</span> <span class="token operator">+</span> strObj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"反射执行前的hash值："</span> <span class="token operator">+</span> strObj<span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    Field field <span class="token operator">=</span> strObj<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span><span class="token string">"value"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    field<span class="token punctuation">.</span><span class="token function">setAccessible</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">char</span><span class="token punctuation">[</span><span class="token punctuation">]</span> value <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> field<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>strObj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    value<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'b'</span><span class="token punctuation">;</span>
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"反射执行后字符串："</span> <span class="token operator">+</span> strObj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"反射执行后的hash值："</span> <span class="token operator">+</span> strObj<span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">/* 
+反射执行前字符串：aaa
+反射执行前的hash值：96321
+反射执行后字符串：aab
+反射执行后的hash值：96321
+*/</span>
+</code></pre>
+<p><strong>说明通过反射我们是可以修改String的值的</strong></p>
+<h3 id="11-String、StringBuilder和StringBuffer的区别？"><a href="#11-String、StringBuilder和StringBuffer的区别？" class="headerlink" title="11.String、StringBuilder和StringBuffer的区别？"></a>11.String、StringBuilder和StringBuffer的区别？</h3><ul>
+<li><strong>String：</strong>Stirng每次进行拼接时，会拼接后创建一个新的String对象，然后将引用变量指向这个新对象，如果需要进行多次的拼接，性能并不好</li>
+<li><strong>StringBuilder：</strong>每次字符串拼接都是在StringBuilder里操作，通过append方法拼接，适合大量字符串的拼接场景，但StringBuilder是线程不安全的</li>
+<li><strong>StingBuffer：</strong>和StringBuilder作用一样，但它是线程安全的，适合多线程场景下的字符串拼接</li>
+</ul>
+<h3 id="12-Exception和Error的区别？"><a href="#12-Exception和Error的区别？" class="headerlink" title="12.Exception和Error的区别？"></a>12.Exception和Error的区别？</h3><p>Exception和Error都是Throwable这个祖先类的子类</p>
+<ul>
+<li><p>Exception：程序本身可以处理的异常，可以通过catch来捕获。而Exception又分为【运行时异常】和【编译异常】（非运行时异常）。</p>
+<blockquote>
+<p>常见的运行时异常有：</p>
+<ul>
+<li>NullPointerException（空指针异常）</li>
+<li>ClassCastException（类型转化异常）</li>
+<li>ArithmeticException（算术异常）</li>
+</ul>
+<p>常见的编译异常有：</p>
+<ul>
+<li>ClassNotFoundException（类无法寻找异常）</li>
+<li>SQLException（SQL异常）</li>
+<li>IOException（IO异常）</li>
+</ul>
+<p>异常的出现一般会使得程序停止，但在项目运行中，通常catch和throw使得项目只是会报异常并不会停止</p>
+</blockquote>
+</li>
+<li><p>Error：程序无法处理的错误，比如虚拟机的错误Virtual MachineError、OutOfMemoryError（堆空间不足错误）、StackOverflowError（栈溢出错误），这些错误出现会使得程序立刻崩溃，程序终止运行。</p>
+</li>
+</ul>
+<h3 id="13-throw和throws的区别是什么？"><a href="#13-throw和throws的区别是什么？" class="headerlink" title="13.throw和throws的区别是什么？"></a>13.throw和throws的区别是什么？</h3><ul>
+<li>throw：throw用来在方法中进行主动的异常抛出，比如我们在业务处理数据时，需要先判断数据是否合法，如果不合法的直接创建一个异常对象然后抛出（throw new Exception）告诉调用者</li>
+<li>throws：throws加在方法后面，throws后面可以加多种异常，用来声明异常。表示该方法并不负责处理异常，告诉调用者在调用过程中自行处理出现的异常：调用者可以捕获出现的异常，也可以继续向外抛出异常</li>
+</ul>
 
             </div>
             <hr/>
