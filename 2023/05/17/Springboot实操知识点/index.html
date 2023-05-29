@@ -433,16 +433,30 @@
 <h3 id="2-创建了自定义异常后该如何配置使用？"><a href="#2-创建了自定义异常后该如何配置使用？" class="headerlink" title="2.创建了自定义异常后该如何配置使用？"></a>2.创建了自定义异常后该如何配置使用？</h3><p>需要用@RestControllerAdvice注解添加在一个全局异常拦截器类中，然后@ExceptionHandler里修饰要拦截的异常类型，符合的异常就会拦截后就可以执行该注解下的方法，我们可以在此方法中返回自定义的异常消息以便抛出</p>
 <h3 id="3-Springboot如何执行一个异步任务？"><a href="#3-Springboot如何执行一个异步任务？" class="headerlink" title="3.Springboot如何执行一个异步任务？"></a>3.Springboot如何执行一个异步任务？</h3><p>可以主动创建一个线程来执行；也可以通过@Async注解</p>
 <p>首先要在启动类上添加@EnableAsync开启异步支持，然后将@Async注解加在需要异步执行的方法上，被该注解的方法发返回类型必须是Future类或void。异步方法返回数据时，需要使用<code>Future</code>包装异步任务结果，然后在controller上调用Future的get方法获取数据</p>
-<h3 id="4-如何解决跨域问题？"><a href="#4-如何解决跨域问题？" class="headerlink" title="4.如何解决跨域问题？"></a>4.如何解决跨域问题？</h3><p>答：一开始是使用nginx反向代理的方法，nginx配置文件里设置一个统一的访问路径，nginx接收到路径后根据路径代理到不同的服务接口，但比较麻烦的是需要为每个服务添加@CrossOrigin的注解。后面就改用Spring 网关了，配置CorsWebFilter配置类， 在配置文件里添加需要转发的服务路径就可以了</p>
-<h3 id="5-定时任务怎么实现的？"><a href="#5-定时任务怎么实现的？" class="headerlink" title="5.定时任务怎么实现的？"></a>5.定时任务怎么实现的？</h3><p>答：专门开了个定时任务的模块，通过@EnableScheduleing注解在类上开启定时，对方法注解@Schedule（cron&#x3D;？？？）进行定时执行发送mq消息调用短信模块的发送手机信息方法</p>
-<h3 id="6-在用到短信服务时是如何配置其密钥这些信息的？"><a href="#6-在用到短信服务时是如何配置其密钥这些信息的？" class="headerlink" title="6.在用到短信服务时是如何配置其密钥这些信息的？"></a>6.在用到短信服务时是如何配置其密钥这些信息的？</h3><p>答：通过在properties配置文件里先写好对于的配置信息，然后创建一个实现了InitializingBean的组件进行读取，通过@Value给变量赋值</p>
+<h3 id="4-如何解决跨域问题？"><a href="#4-如何解决跨域问题？" class="headerlink" title="4.如何解决跨域问题？"></a>4.如何解决跨域问题？</h3><p>一开始是使用nginx反向代理的方法，nginx配置文件里设置一个统一的访问路径，nginx接收到路径后根据路径代理到不同的服务接口，但比较麻烦的是需要为每个服务添加@CrossOrigin的注解。后面就改用Spring 网关了，配置CorsWebFilter配置类， 在配置文件里添加需要转发的服务路径就可以了</p>
+<h3 id="5-定时任务怎么实现的？"><a href="#5-定时任务怎么实现的？" class="headerlink" title="5.定时任务怎么实现的？"></a>5.定时任务怎么实现的？</h3><p>专门开了个定时任务的模块，通过@EnableScheduleing注解在类上开启定时，对方法注解@Schedule（cron&#x3D;？？？）进行定时执行发送mq消息调用短信模块的发送手机信息方法</p>
+<h3 id="6-在用到短信服务时是如何配置其密钥这些信息的？"><a href="#6-在用到短信服务时是如何配置其密钥这些信息的？" class="headerlink" title="6.在用到短信服务时是如何配置其密钥这些信息的？"></a>6.在用到短信服务时是如何配置其密钥这些信息的？</h3><p>通过在properties配置文件里先写好对于的配置信息，然后创建一个实现了InitializingBean的组件进行读取，通过@Value给变量赋值</p>
 <h3 id="7-像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？"><a href="#7-像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？" class="headerlink" title="7.像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？"></a>7.像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？</h3><p>不把这些信息上传：</p>
 <ol>
 <li>如果用的是docker-compose，可以单独创建一个docker-compose-override.yaml,在里面专门写上这些私密配置信息，这个文件和docker-compose.yaml是有关系的，如果两个文件中出现同样的配置，override会覆盖，而不一样的信息会合并执行，所以最终直接<code>docker-compose -f docker-compose.yml -f docker-compose.prod.yml up   </code>就可以，上传时把覆盖文件填到gitignore文件里就可以了</li>
 <li>也可以在ini文件中填写私密信息，通过第三方工具包来读取，将ini文件填到gitignore里</li>
 </ol>
-<h3 id="8-Serializable接口的作用？"><a href="#8-Serializable接口的作用？" class="headerlink" title="8.Serializable接口的作用？"></a>8.Serializable接口的作用？</h3><p>答：类通过实现Serializable接口能够实现序列化或反序列化，当我们需要将内存中的java对象进行传输或存储的时候，就需要将对象进行序列化。</p>
+<h3 id="8-Serializable接口的作用？"><a href="#8-Serializable接口的作用？" class="headerlink" title="8.Serializable接口的作用？"></a>8.Serializable接口的作用？</h3><p>类通过实现Serializable接口能够实现序列化或反序列化，当我们需要将内存中的java对象进行传输或存储的时候，就需要将对象进行序列化。</p>
 <p>序列化之后，就可以把序列化后的内容写入磁盘，或者通过网络传输到别的机器上。等要用到的时候将反序列化回Java对象。但这时对象的地址是改变了的</p>
+<h3 id="9-如何通过gitignore在上传时隐藏springboot的application-properties文件？"><a href="#9-如何通过gitignore在上传时隐藏springboot的application-properties文件？" class="headerlink" title="9.如何通过gitignore在上传时隐藏springboot的application.properties文件？"></a>9.如何通过gitignore在上传时隐藏springboot的application.properties文件？</h3><p><strong>有两种情况，区别在于需要设置忽略文件时该文件是否已经提交</strong></p>
+<ul>
+<li>如果未提交：直接在.gitignore文件里添加所需忽略的文件路径</li>
+<li>如果已经提交：需要先通过git命令将提交缓存删除：<code>git rm -r --cached .</code> 。然后再添加文件路径到gitignore文件里再提交推送。此时被忽略的文件是显示黄色的。</li>
+</ul>
+<blockquote>
+<ul>
+<li>红色：表明文件未添加</li>
+<li>绿色：表明文件已添加</li>
+<li>黄色：表明文件已提交，但是被忽略了</li>
+<li>白色或黑色（视主题而定）：表明文件已提交</li>
+</ul>
+<p>gitignore文件里的忽略文件路径一般填 存储库根路径 就可以</p>
+</blockquote>
 <h3 id="（待更）"><a href="#（待更）" class="headerlink" title="（待更）"></a>（待更）</h3>
             </div>
             <hr/>

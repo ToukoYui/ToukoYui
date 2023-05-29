@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="JavaSE的易遗漏知识点整理, 流浪秃球计划">
+    <meta name="keywords" content="JavaSE的易遗漏知识点补充, 流浪秃球计划">
     <meta name="description" content="1.HashMap和ConcurrentHashMap的区别ConcurrentHashMap相比前者，它是能够保证线程安全的。在1.7时，它在hashmap上加了个维度，其实是个二维的哈希表，它把一个个hashmap视为一个个Segmen">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>JavaSE的易遗漏知识点整理 | 流浪秃球计划</title>
+    <title>JavaSE的易遗漏知识点补充 | 流浪秃球计划</title>
     <link rel="icon" type="image/png" href="/medias/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -287,13 +287,13 @@
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/21.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        JavaSE的易遗漏知识点整理
+                        JavaSE的易遗漏知识点补充
                     </div>
                 </div>
             </div>
@@ -613,7 +613,59 @@
 <li>throw：throw用来在方法中进行主动的异常抛出，比如我们在业务处理数据时，需要先判断数据是否合法，如果不合法的直接创建一个异常对象然后抛出（throw new Exception）告诉调用者</li>
 <li>throws：throws加在方法后面，throws后面可以加多种异常，用来声明异常。表示该方法并不负责处理异常，告诉调用者在调用过程中自行处理出现的异常：调用者可以捕获出现的异常，也可以继续向外抛出异常</li>
 </ul>
+<h3 id="14-什么是泛型，泛型的作用是什么？"><a href="#14-什么是泛型，泛型的作用是什么？" class="headerlink" title="14.什么是泛型，泛型的作用是什么？"></a>14.什么是泛型，泛型的作用是什么？</h3><p><strong>泛型是JDK5中新增的一种特性，主要作用是提高代码的可读性和稳定性。</strong></p>
+<p>比如说创建一个ArrayList：<code>List&lt;Strinf&gt; list = new ArrayList&lt;&gt;();</code></p>
+<ul>
+<li>从使用角度说：<code>&lt;String&gt;</code>表明只能这个list中的元素只能是String的类型，如果add其他类型的元素会报错，并且我们看到<code>&lt;String&gt;</code>就能直观的知道这个list是存储String的。</li>
+<li>从定义角度说：我们可以使用<code>&lt;T&gt;</code> 或<code>&lt;E&gt;</code>作为定义类的泛型，表明在调用此类时可以传入任意种类的参数。有泛型类、泛型接口、泛型方法。其中泛型方法中，如果传入的参数是泛型参数，需要在方法返回类型的前面加上泛型，这样泛型参数才会生效</li>
+</ul>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token operator">&lt;</span> E <span class="token operator">></span> <span class="token keyword">void</span> <span class="token function">printArray</span><span class="token punctuation">(</span> E<span class="token punctuation">[</span><span class="token punctuation">]</span> inputArray <span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span> E element <span class="token operator">:</span> inputArray <span class="token punctuation">)</span><span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span> <span class="token string">"%s "</span><span class="token punctuation">,</span> element <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<h3 id="15-为什么HashMap的长度是2的幂次方？"><a href="#15-为什么HashMap的长度是2的幂次方？" class="headerlink" title="15.为什么HashMap的长度是2的幂次方？"></a>15.为什么HashMap的长度是2的幂次方？</h3><p>我们知道，hashcode的取值范围为【Integer_MIN，Integer_MAX】（也就是- 2^31 ~ 2^31-1）。</p>
+<p>在HashMap中数组的下标是通过key的hashcode确定的。但是这么大的取值范围如果创建一个等长的数组的话堆中是放不下的，所以采用了取余的思想。也就是将哈希值对数组长度length取余，这样就能保证得到的数字在数组范围内。</p>
+<p>不过其实存在这么一个等式：<code>hashcode%length == hashcode &amp; (length-1)</code>,而且与操作比余数运算要快。但该等式要成立，必须满足一个条件：length必须是2的 n 次方。</p>
+<p>这就是HashMap 的长度是 2 的幂次方的原因。</p>
+<h3 id="16-如何将数组转化为集合？"><a href="#16-如何将数组转化为集合？" class="headerlink" title="16.如何将数组转化为集合？"></a>16.如何将数组转化为集合？</h3><p>我们第一想法是使用<code>Arrays.asList(arrXXX)</code>方法。这样确实可以做到将一个 包装类数组 转为集合。</p>
+<pre class=" language-java"><code class="language-java">List<span class="token operator">&lt;</span>String<span class="token operator">></span> list <span class="token operator">=</span> Arrays<span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token string">"abc"</span><span class="token punctuation">,</span><span class="token string">"def"</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p><strong>但是里面也存在一些坑：得到的集合并不能进行add或remove操作，否则会抛出UnsupportedOperationException异常</strong></p>
+<p>原因在于asList方法返回的是一个ArrayList类型对象，但这个对象是Arrays类下的一个内部类，而不是AbstractList类下的：java.util.Arrays$ArrayList。</p>
+<p><img src="/../images/image-20230530002605744.png" alt="image-20230530002605744"></p>
+<p>在Arrays类下的这个内部类并没有实现像AbstractList.ArrayList的add或remove方法。</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 使用举例</span>
+List<span class="token operator">&lt;</span>String<span class="token operator">></span> list <span class="token operator">=</span> Arrays<span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token string">"abc"</span><span class="token punctuation">,</span><span class="token string">"def"</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
+<span class="token comment" spellcheck="true">// AbstractList类中的方法实现</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">int</span> index<span class="token punctuation">,</span> E element<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">UnsupportedOperationException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">public</span> E <span class="token function">remove</span><span class="token punctuation">(</span><span class="token keyword">int</span> index<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">UnsupportedOperationException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>像上面例子中将Arrays$ArrayList进行向上转型成List，由于list这个集合引用是List类型，但是其子类也就是这个内部类并没有重写List接口的add和remove方法，所以就会调用到List接口的一个直接实现类（AbstractList类）中的add&#x2F;remove方法。<strong>而在这两个方法中并没有具体的实现逻辑，方法中都是直接抛出UnsupportedOperationException异常。</strong>所以是Arrays.ArrayList调用add&#x2F;remove方法是会抛出异常的。</p>
+<p>那么我们应该怎么将数组转化为一个可以add&#x2F;remove的集合呢?</p>
+<ol>
+<li>最简便的方法</li>
+</ol>
+<pre class=" language-java"><code class="language-java">List list <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span>Arrays<span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">,</span> <span class="token string">"b"</span><span class="token punctuation">,</span> <span class="token string">"c"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+<ol start="2">
+<li>使用 Java8 的 <code>Stream</code>(推荐)</li>
+</ol>
+<pre class=" language-java"><code class="language-java">Integer <span class="token punctuation">[</span><span class="token punctuation">]</span> myArray <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+List myList <span class="token operator">=</span> Arrays<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span>myArray<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span>Collectors<span class="token punctuation">.</span><span class="token function">toList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">//基本类型也可以实现转换（依赖boxed的装箱操作）</span>
+<span class="token keyword">int</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> myArray2 <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+List myList <span class="token operator">=</span> Arrays<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span>myArray2<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">boxed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span>Collectors<span class="token punctuation">.</span><span class="token function">toList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h3 id="待更"><a href="#待更" class="headerlink" title="(待更)"></a>(待更)</h3>
             </div>
             <hr/>
 
@@ -636,7 +688,7 @@
                     </span>
                     <a href="http://example.com" class="b-link-green">流浪秃球计划</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2023/05/22/Java%E7%9A%84%E6%98%93%E9%81%97%E6%BC%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/" class="b-link-green">JavaSE的易遗漏知识点整理</a>
+                    <a href="/2023/05/22/Java%E7%9A%84%E6%98%93%E9%81%97%E6%BC%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/" class="b-link-green">JavaSE的易遗漏知识点补充</a>
                 </p>
             </div>
         </div>
@@ -666,9 +718,9 @@
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="JavaSE的易遗漏知识点整理">
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="JavaSE的易遗漏知识点补充">
                         
-                        <span class="card-title">JavaSE的易遗漏知识点整理</span>
+                        <span class="card-title">JavaSE的易遗漏知识点补充</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
