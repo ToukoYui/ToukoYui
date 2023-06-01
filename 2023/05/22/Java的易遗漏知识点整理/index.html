@@ -464,7 +464,8 @@
 <h3 id="5-什么是ThreadLocal？"><a href="#5-什么是ThreadLocal？" class="headerlink" title="5.什么是ThreadLocal？"></a>5.什么是ThreadLocal？</h3><p>能够使一个变量是线程隔离的，该变量对其他线程而言是封闭且隔离的。在threadlocal类中有一个ThreadLocalMap用来存储数据，它实际上是Thread类中的一个map，也就是说这个mao是每个线程各自独有的一份副本，map中的key是ThreadLocal对象，而value就是我们要存储的线程隔离的值。因此我们每次如果想实现一个线程隔离的值的话，每次就需要创建一个ThreadLocal来set</p>
 <h3 id="6-Serializable接口的作用？"><a href="#6-Serializable接口的作用？" class="headerlink" title="6.Serializable接口的作用？"></a>6.Serializable接口的作用？</h3><p>类通过实现Serializable接口能够实现序列化或反序列化，当我们需要将内存中的java对象进行传输或存储的时候，就需要将对象进行序列化。</p>
 <p>序列化之后，就可以把序列化后的内容写入磁盘，或者通过网络传输到别的机器上。等要用到的时候将反序列化回Java对象。但这时对象的地址是改变了的</p>
-<h3 id="7-volatile关键字的作用？"><a href="#7-volatile关键字的作用？" class="headerlink" title="7.volatile关键字的作用？"></a>7.volatile关键字的作用？</h3><p>被volatile修饰的变量在被修改时是直接将修改结果写入主存（内存）中的，读取的时候也是直接从主存读取不从cpu的高速缓存读取。它能够保证在多线程场景下的变量在操作时能够得到正确的结果</p>
+<h3 id="7-volatile关键字的作用？"><a href="#7-volatile关键字的作用？" class="headerlink" title="7.volatile关键字的作用？"></a>7.volatile关键字的作用？</h3><p>被volatile修饰的变量在被修改时是直接将修改结果写入主存（内存）中的，读取的时候也是直接从主存读取不从cpu的高速缓存读取。它能够保证在多线程场景下的变量在操作时能够得到正确的结果.</p>
+<p><strong>volatile关键字能保证变量的可见性，但不能保证对变量的操作是原子性的。</strong></p>
 <h3 id="8-jdbc的连接步骤？"><a href="#8-jdbc的连接步骤？" class="headerlink" title="8.jdbc的连接步骤？"></a>8.jdbc的连接步骤？</h3><p>先通过反射加载数据库驱动，然后根据驱动管理类创建一个连接对象，调用连接对象的Statement方法存入sql然后执行</p>
 <h3 id="9-静态代理和动态代理的区别？"><a href="#9-静态代理和动态代理的区别？" class="headerlink" title="9.静态代理和动态代理的区别？"></a>9.静态代理和动态代理的区别？</h3><p>首先需要什么是代理模式：</p>
 <p>代理模式是常用的结构型设计模式之一，某一个对象提供一个代理，并由代理对象控制原对象的引用。代理对象在客户端和目标对象之间起到中介作用。</p>
@@ -665,6 +666,14 @@ List myList <span class="token operator">=</span> Arrays<span class="token punct
 <span class="token keyword">int</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> myArray2 <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
 List myList <span class="token operator">=</span> Arrays<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span>myArray2<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">boxed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span>Collectors<span class="token punctuation">.</span><span class="token function">toList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
+<h3 id="17-java线程的生命周期中的blocked和waiting状态的区别？"><a href="#17-java线程的生命周期中的blocked和waiting状态的区别？" class="headerlink" title="17.java线程的生命周期中的blocked和waiting状态的区别？"></a>17.java线程的生命周期中的blocked和waiting状态的区别？</h3><p><strong>Blocked状态：</strong>一个线程因为等待临界区的锁而被阻塞产生的状态。比如需要进入synchronized关键字的同步代码块，如果此时已经有其他线程在执行着，本线程会进入阻塞状态。</p>
+<p><strong>Waitiing状态：</strong>无限期等待另一个线程执行特定操作的线程处于此状态。一个线程A在拿到锁但不满足执行条件的时候，需要另一个线程B去满足这个条件，那么线程A就会释放锁并处于waiting的状态，等线程B执行完再执行。</p>
+<blockquote>
+<p>调用Object类下的wait方法，就能让线程进入waiting状态，notify&#x2F;notifyAll能让线程结束waiting状态。</p>
+<p>其中notify是随机唤醒正在此对象的监视器上等待的单个线程</p>
+<p>notifyAll是唤醒此对象监视器上等待的所有线程。</p>
+</blockquote>
+<p><strong>一句话概括：在java中，阻塞状态是被动的，是因为线程获取不到锁而进入等待，而等待状态是主动的，是线程得到锁但不满足某些条件主动释放锁进入等待，等待别的线程去满足条件。</strong></p>
 <h3 id="待更"><a href="#待更" class="headerlink" title="(待更)"></a>(待更)</h3>
             </div>
             <hr/>

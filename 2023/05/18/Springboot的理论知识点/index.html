@@ -512,6 +512,8 @@
 <li>DispatcherServlet拿着这个对象传给ViewResolver进行解析，解析完成得到一个具体的视图View</li>
 <li>之后DispatcherServlet将这个View进行渲染响应给前端</li>
 </ol>
+<h3 id="8-Controller和-RestController的区别？"><a href="#8-Controller和-RestController的区别？" class="headerlink" title="8.@Controller和@RestController的区别？"></a>8.@Controller和@RestController的区别？</h3><p>@Controller注解的方法下返回的字符串类型的页面路径</p>
+<p>@RestController相当于是@Controller和@ResponseBody的结合，因此RestController注解的方法返回的是一个实体对象，前端获得的通常是json对象</p>
 <h3 id="（待更）"><a href="#（待更）" class="headerlink" title="（待更）"></a>（待更）</h3>
             </div>
             <hr/>
