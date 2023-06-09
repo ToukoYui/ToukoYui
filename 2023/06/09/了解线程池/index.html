@@ -4,8 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Springboot实操知识点, 流浪秃球计划">
-    <meta name="description" content="1.@Configuration和@Component的区别？实际上Configuration本质就是component，Configuration修饰的类中带有Bean注解的方法都会被动态代理，调用时的实例是同一个，而Component每">
+    <meta name="keywords" content="了解线程池, 流浪秃球计划">
+    <meta name="description" content="线程池：线程池就是管理一系列线程的资源池，当有任务时，直接从线程池中拿出已经创建好的线程来处理，处理完后的线程被放回线程池中，并不会被销毁。
+优点：线程池能够降低重复创建和销毁线程所来带的资源消耗，由于能在需要时就能获取已经创建的线程，响应">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,7 +14,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Springboot实操知识点 | 流浪秃球计划</title>
+    <title>了解线程池 | 流浪秃球计划</title>
     <link rel="icon" type="image/png" href="/medias/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -287,13 +288,13 @@
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        Springboot实操知识点
+                        了解线程池
                     </div>
                 </div>
             </div>
@@ -385,12 +386,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/Springboot/" target="_blank">
-                                <span class="chip bg-color">Springboot</span>
-                            </a>
-                        
                             <a href="/tags/Java/" target="_blank">
                                 <span class="chip bg-color">Java</span>
+                            </a>
+                        
+                            <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" target="_blank">
+                                <span class="chip bg-color">多线程</span>
                             </a>
                         
                     </div>
@@ -401,8 +402,8 @@
                     <div class="post-cate">
                         <i class="fa fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/Java/" class="post-category" target="_blank">
-                                Java
+                            <a href="/categories/java/" class="post-category" target="_blank">
+                                java
                             </a>
                         
                     </div>
@@ -413,7 +414,7 @@
             <div class="post-info">
                 <div class="post-date info-break-policy">
                     <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-05-17
+                    2023-06-09
                 </div>
 
                 
@@ -429,42 +430,61 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="1-Configuration和-Component的区别？"><a href="#1-Configuration和-Component的区别？" class="headerlink" title="1.@Configuration和@Component的区别？"></a>1.@Configuration和@Component的区别？</h3><p>实际上Configuration本质就是component，Configuration修饰的类中带有Bean注解的方法都会被动态代理，调用时的实例是同一个，而Component每次调用都是新的实例</p>
-<h3 id="2-创建了自定义异常后该如何配置使用？"><a href="#2-创建了自定义异常后该如何配置使用？" class="headerlink" title="2.创建了自定义异常后该如何配置使用？"></a>2.创建了自定义异常后该如何配置使用？</h3><p>需要用@RestControllerAdvice注解添加在一个全局异常拦截器类中，然后@ExceptionHandler里修饰要拦截的异常类型，符合的异常就会拦截后就可以执行该注解下的方法，我们可以在此方法中返回自定义的异常消息以便抛出</p>
-<h3 id="3-Springboot如何执行一个异步任务？"><a href="#3-Springboot如何执行一个异步任务？" class="headerlink" title="3.Springboot如何执行一个异步任务？"></a>3.Springboot如何执行一个异步任务？</h3><p>可以主动创建一个线程来执行；也可以通过@Async注解</p>
-<p>首先要在启动类上添加@EnableAsync开启异步支持，然后将@Async注解加在需要异步执行的方法上，被该注解的方法发返回类型必须是Future类或void。异步方法返回数据时，需要使用<code>Future</code>包装异步任务结果，然后在controller上调用Future的get方法获取数据</p>
-<h3 id="4-如何解决跨域问题？"><a href="#4-如何解决跨域问题？" class="headerlink" title="4.如何解决跨域问题？"></a>4.如何解决跨域问题？</h3><p>一开始是使用nginx反向代理的方法，nginx配置文件里设置一个统一的访问路径，nginx接收到路径后根据路径代理到不同的服务接口，但比较麻烦的是需要为每个服务添加@CrossOrigin的注解。后面就改用Spring 网关了，配置CorsWebFilter配置类， 在配置文件里添加需要转发的服务路径就可以了</p>
-<h3 id="5-定时任务怎么实现的？"><a href="#5-定时任务怎么实现的？" class="headerlink" title="5.定时任务怎么实现的？"></a>5.定时任务怎么实现的？</h3><p>专门开了个定时任务的模块，通过@EnableScheduleing注解在类上开启定时，对方法注解@Schedule（cron&#x3D;？？？）进行定时执行发送mq消息调用短信模块的发送手机信息方法</p>
-<h3 id="6-在用到短信服务时是如何配置其密钥这些信息的？"><a href="#6-在用到短信服务时是如何配置其密钥这些信息的？" class="headerlink" title="6.在用到短信服务时是如何配置其密钥这些信息的？"></a>6.在用到短信服务时是如何配置其密钥这些信息的？</h3><p>通过在properties配置文件里先写好对于的配置信息，然后创建一个实现了InitializingBean的组件进行读取，通过@Value给变量赋值</p>
-<h3 id="7-像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？"><a href="#7-像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？" class="headerlink" title="7.像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？"></a>7.像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？</h3><p>不把这些信息上传：</p>
+                <p><strong>线程池：线程池就是管理一系列线程的资源池，当有任务时，直接从线程池中拿出已经创建好的线程来处理，处理完后的线程被放回线程池中，并不会被销毁。</strong></p>
+<p>优点：线程池能够降低重复创建和销毁线程所来带的资源消耗，由于能在需要时就能获取已经创建的线程，响应速度会更快。</p>
+<p>我们可以通过ThreadPoolExecutor类创建一个线程池执行器，通过该执行器调用execute&#x2F;submit方法执行线程。</p>
+<p><img src="/../images/image-20230609110810815.png" alt="image-20230609110810815"></p>
+<p><strong>参数介绍：</strong></p>
+<ul>
+<li><strong>corePoolSize（核心线程大小）：</strong>线程池中维护的一个最小的线程数量，即使这些线程处于空闲状态，也不会被销毁。当任务提交到线程池时，如果发现当前线程数超过了此参数，池子中就会创建新的线程</li>
+<li><strong>maximumPoolSize（最大线程大小）：</strong>线程池中的最大线程数量限制，当线程数达到corePoolSize后，如果继续有任务被提交到线程池，会将任务缓存到工作队列。如果队列也满了，就会创建新的线程。</li>
+<li><strong>workQueue（工作队列）：</strong>新任务被提交后，会先进入到此工作队列中，任务调度时再从队列中取出任务。</li>
+<li><strong>handler（拒绝策略）：</strong>当工作队列中的任务以及达到最大限度，并且池子中的线程数也到达了maximumPoolSize，如果此时有新来的任务，这时候就会触发设置好的拒绝策略。</li>
+</ul>
+<p><strong>线程池处理任务的流程：</strong></p>
 <ol>
-<li>如果用的是docker-compose，可以单独创建一个docker-compose-override.yaml,在里面专门写上这些私密配置信息，这个文件和docker-compose.yaml是有关系的，如果两个文件中出现同样的配置，override会覆盖，而不一样的信息会合并执行，所以最终直接<code>docker-compose -f docker-compose.yml -f docker-compose.prod.yml up   </code>就可以，上传时把覆盖文件填到gitignore文件里就可以了</li>
-<li>也可以在ini文件中填写私密信息，通过第三方工具包来读取，将ini文件填到gitignore里</li>
+<li>起初如果当前运行的线程数&lt;核心线程数，就会创建一个线程来执行任务</li>
+<li>如果这时运行的线程数&gt;&#x3D;核心线程数，但是&lt;最大线程数，任务会被放入工作队列中等待执行</li>
+<li>如果此时运行的线程数核心在2的基础上，工作队列也满了，那么就会创建新的线程来执行任务</li>
+<li>如果此时运行的线程数超出了最大线程数并且工作队列也满了，就会触发设置好拒绝策略，当前的任务会被拒绝</li>
 </ol>
-<h3 id="8-Serializable接口的作用？"><a href="#8-Serializable接口的作用？" class="headerlink" title="8.Serializable接口的作用？"></a>8.Serializable接口的作用？</h3><p>类通过实现Serializable接口能够实现序列化或反序列化，当我们需要将内存中的java对象进行传输或存储的时候，就需要将对象进行序列化。</p>
-<p>序列化之后，就可以把序列化后的内容写入磁盘，或者通过网络传输到别的机器上。等要用到的时候将反序列化回Java对象。但这时对象的地址是改变了的</p>
-<h3 id="9-如何通过gitignore在上传时隐藏springboot的application-properties文件？"><a href="#9-如何通过gitignore在上传时隐藏springboot的application-properties文件？" class="headerlink" title="9.如何通过gitignore在上传时隐藏springboot的application.properties文件？"></a>9.如何通过gitignore在上传时隐藏springboot的application.properties文件？</h3><p><strong>有两种情况，区别在于需要设置忽略文件时该文件是否已经提交</strong></p>
+<p><strong>jdk中提供了4中拒绝策略：</strong></p>
 <ul>
-<li>如果未提交：直接在.gitignore文件里添加所需忽略的文件路径</li>
-<li>如果已经提交：需要先通过git命令将提交缓存删除：<code>git rm -r --cached .</code> 。然后再添加文件路径到gitignore文件里再提交推送。此时被忽略的文件是显示黄色的。</li>
+<li><strong>AbortPolicy：</strong>直接丢弃任务，并抛出RejectedExecutionException异常</li>
+<li><strong>DiscardPolicy：</strong>直接丢弃任务，之后什么都不做</li>
+<li><strong>DiscardOldestPolicy：</strong>丢弃最早进入的任务，尝试把当前的任务加进工作队列</li>
+<li><strong>CallerRunsPolicy：</strong>在调用者线程中直接执行被拒绝任务的run方法</li>
 </ul>
-<blockquote>
+<p><strong>jdk提供的线程池类型有以下4种：</strong></p>
 <ul>
-<li>红色：表明文件未添加</li>
-<li>绿色：表明文件已添加</li>
-<li>黄色：表明文件已提交，但是被忽略了</li>
-<li>白色或黑色（视主题而定）：表明文件已提交</li>
+<li><strong>FixedThreadPool（定长线程池）：</strong>只有核心线程，线程数固定。执行完立即回收，任务队列为链表结构的有界队列。</li>
+<li><strong>ScheduledThreadPool（定时线程池）：</strong>核心线程数量固定，非核心线程数量无限，任务队列为延时阻塞队列。提交任务后可以延迟指定延迟时间后执行</li>
+<li><strong>CachedThreadPool（可缓存线程池）：</strong>无核心线程，非核心线程数量无限，任务队列为不存储元素的阻塞队列。适合执行大量但耗时小的任务。</li>
+<li><strong>SingleThreadExecutor（单线程执行器）：</strong>只有 1 个核心线程，无非核心线程，执行完立即回收，任务队列为链表结构的有界队列</li>
 </ul>
-<p>gitignore文件里的忽略文件路径一般填 存储库根路径 就可以</p>
-</blockquote>
-<h3 id="10-springboot的配置文件类型中，yml、yaml、和properties的区别和优先级？"><a href="#10-springboot的配置文件类型中，yml、yaml、和properties的区别和优先级？" class="headerlink" title="10.springboot的配置文件类型中，yml、yaml、和properties的区别和优先级？"></a>10.springboot的配置文件类型中，yml、yaml、和properties的区别和优先级？</h3><ul>
-<li><p>写法上的区别：yml和yaml的写法上没区别，都是层级写法通过冒号赋值；而properties是链式写法，通过等号赋值</p>
-</li>
-<li><p>优先级：</p>
-</li>
-</ul>
-<p>​		如果yml和properties类型同时存在并且配置冲突的话，加载优先级如下： properties &gt; yml &gt; yaml </p>
-<h3 id="（待更）"><a href="#（待更）" class="headerlink" title="（待更）"></a>（待更）</h3>
+<p><strong>线程池中线程的名称如何修改？</strong></p>
+<p>默认线程工厂（DefaultThreadFactory）中创建出的线程名称是：<code>pool-m-thread-n</code>形式的。其中m是创建的工厂编号，n是执行任务的线程编号</p>
+<p><img src="/../images/image-20230610014403105.png" alt="image-20230610014403105"></p>
+<p><strong>默认的线程命名形式没有业务含义，有时为了能定位到出现问题的线程，需要我们自定义线程数。</strong></p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">MyThreadFactory</span> <span class="token keyword">implements</span> <span class="token class-name">ThreadFactory</span><span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> String factoryName<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> ThreadFactory factory<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 创建这个自定义线程工厂类的有参构造，用于线程名称赋值</span>
+    <span class="token keyword">public</span> <span class="token function">MyThreadFactory</span><span class="token punctuation">(</span>ThreadFactory factory<span class="token punctuation">,</span>String factoryName<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>factoryName <span class="token operator">=</span> factoryName<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>factory <span class="token operator">=</span> factory<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">// 实现ThreadFactory接口的方法</span>
+    <span class="token annotation punctuation">@Override</span> 
+    <span class="token keyword">public</span> Thread <span class="token function">newThread</span><span class="token punctuation">(</span>Runnable r<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        Thread thread <span class="token operator">=</span> factory<span class="token punctuation">.</span><span class="token function">newThread</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        thread<span class="token punctuation">.</span><span class="token function">setName</span><span class="token punctuation">(</span>factoryName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> thread<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+
             </div>
             <hr/>
 
@@ -487,7 +507,7 @@
                     </span>
                     <a href="http://example.com" class="b-link-green">流浪秃球计划</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2023/05/17/Springboot%E5%AE%9E%E6%93%8D%E7%9F%A5%E8%AF%86%E7%82%B9/" class="b-link-green">Springboot实操知识点</a>
+                    <a href="/2023/06/09/%E4%BA%86%E8%A7%A3%E7%BA%BF%E7%A8%8B%E6%B1%A0/" class="b-link-green">了解线程池</a>
                 </p>
             </div>
         </div>
@@ -508,29 +528,77 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2023/05/18/Springboot%E7%9A%84%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86%E7%82%B9/">
+                <a href="/2023/06/09/%E4%BA%86%E8%A7%A3%E7%BA%BF%E7%A8%8B%E6%B1%A0/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="Springboot理论知识点">
+                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="了解线程池">
                         
-                        <span class="card-title">Springboot理论知识点</span>
+                        <span class="card-title">了解线程池</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">1.如何理解 IOC 和 DI ？Ioc：inversion of control（控制反转）
-它是一种控制思想，将创建对象的控制权转交给Spring容器
-
-何为控制：指的是对象创建的权力
-何为反转：创建对象的权力由开发者手中转交给IOC容</div>
+                    <div class="summary">线程池：线程池就是管理一系列线程的资源池，当有任务时，直接从线程池中拿出已经创建好的线程来处理，处理完后的线程被放回线程池中，并不会被销毁。
+优点：线程池能够降低重复创建和销毁线程所来带的资源消耗，由于能在需要时就能获取已经创建的线程，响应</div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2023-05-18
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2023-06-09
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/java/" class="post-category" target="_blank">
+                                    java
+                                </a>
+                            
+                            
                         </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Java/" target="_blank">
+                        <span class="chip bg-color">Java</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" target="_blank">
+                        <span class="chip bg-color">多线程</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2023/05/22/Java%E7%9A%84%E6%98%93%E9%81%97%E6%BC%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="JavaSE的易遗漏知识点补充">
+                        
+                        <span class="card-title">JavaSE的易遗漏知识点补充</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">1.HashMap和ConcurrentHashMap的区别ConcurrentHashMap相比前者，它是能够保证线程安全的。在1.7时，它在hashmap上加了个维度，其实是个二维的哈希表，它把一个个hashmap视为一个个Segmen</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2023-05-22
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-bookmark fa-fw icon-category"></i>
@@ -546,59 +614,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Springboot/" target="_blank">
-                        <span class="chip bg-color">Springboot</span>
-                    </a>
-                    
                     <a href="/tags/Java/" target="_blank">
                         <span class="chip bg-color">Java</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2023/05/17/Redis%E7%9A%84%E7%9B%B8%E5%85%B3%E7%89%B9%E6%80%A7/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="Redis的相关特性">
-                        
-                        <span class="card-title">Redis的相关特性</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary">1.redis的单线程怎么理解?redis的单线程指的是客户端接收请求-解析请求-进行数据读写操作-返回数据给客户端这个过程都是由一个主线程进行的，对于命令的执行是由单线程进行的。但是redis还会开启三个后台线程
-三个后台线程分别处理：
-</div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2023-05-17
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fa fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/Redis/" class="post-category" target="_blank">
-                                    Redis
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/Redis/" target="_blank">
-                        <span class="chip bg-color">Redis</span>
                     </a>
                     
                 </div>
