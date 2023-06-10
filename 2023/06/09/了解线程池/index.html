@@ -431,7 +431,7 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <p><strong>线程池：线程池就是管理一系列线程的资源池，当有任务时，直接从线程池中拿出已经创建好的线程来处理，处理完后的线程被放回线程池中，并不会被销毁。</strong></p>
-<p>优点：线程池能够降低重复创建和销毁线程所来带的资源消耗，由于能在需要时就能获取已经创建的线程，响应速度会更快。</p>
+<p><strong>优点：线程池能够降低重复创建和销毁线程所来带的资源消耗，由于能在需要时就能获取已经创建的线程，响应速度会更快。</strong></p>
 <p>我们可以通过ThreadPoolExecutor类创建一个线程池执行器，通过该执行器调用execute&#x2F;submit方法执行线程。</p>
 <p><img src="/../images/image-20230609110810815.png" alt="image-20230609110810815"></p>
 <p><strong>参数介绍：</strong></p>
@@ -462,10 +462,16 @@
 <li><strong>CachedThreadPool（可缓存线程池）：</strong>无核心线程，非核心线程数量无限，任务队列为不存储元素的阻塞队列。适合执行大量但耗时小的任务。</li>
 <li><strong>SingleThreadExecutor（单线程执行器）：</strong>只有 1 个核心线程，无非核心线程，执行完立即回收，任务队列为链表结构的有界队列</li>
 </ul>
+<p><strong>常用的工作队列（阻塞队列）：</strong></p>
+<ul>
+<li>LinkedBlockingQueue：由链表组成的有界队列，默认大小为Integer.MAX_VALUE，可能OOM</li>
+<li>SynchronousQueue：一个不存储元素的队列，目的是为了进来一个任务就创建一个新的线程来执行</li>
+<li>DelayQueue：可以从此队列中延迟获取元素，创建元素时可以指定多久时间后才能从队列中获得当前元素</li>
+</ul>
 <p><strong>线程池中线程的名称如何修改？</strong></p>
 <p>默认线程工厂（DefaultThreadFactory）中创建出的线程名称是：<code>pool-m-thread-n</code>形式的。其中m是创建的工厂编号，n是执行任务的线程编号</p>
 <p><img src="/../images/image-20230610014403105.png" alt="image-20230610014403105"></p>
-<p><strong>默认的线程命名形式没有业务含义，有时为了能定位到出现问题的线程，需要我们自定义线程数。</strong></p>
+<p><strong>默认的线程命名形式没有业务含义，有时为了能定位到出现问题的线程，需要我们自定义线程工厂。</strong></p>
 <pre class=" language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">MyThreadFactory</span> <span class="token keyword">implements</span> <span class="token class-name">ThreadFactory</span><span class="token punctuation">{</span>
     <span class="token keyword">private</span> <span class="token keyword">final</span> String factoryName<span class="token punctuation">;</span>
     <span class="token keyword">private</span> <span class="token keyword">final</span> ThreadFactory factory<span class="token punctuation">;</span>
@@ -484,6 +490,20 @@
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
+<p>**除此之外，还可以利用 guava 的 <code>ThreadFactoryBuilder</code> **</p>
+<pre class=" language-java"><code class="language-java">ThreadFactory threadFactory <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ThreadFactoryBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">setNameFormat</span><span class="token punctuation">(</span>threadNamePrefix <span class="token operator">+</span> <span class="token string">"-%d"</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">setDaemon</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ExecutorService threadPool <span class="token operator">=</span> 
+    <span class="token keyword">new</span> <span class="token class-name">ThreadPoolExecutor</span><span class="token punctuation">(</span>corePoolSize<span class="token punctuation">,</span> maximumPoolSize<span class="token punctuation">,</span> keepAliveTime<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MINUTES<span class="token punctuation">,</span> workQueue<span class="token punctuation">,</span> threadFactory<span class="token punctuation">)</span>
+</code></pre>
+<p><strong>线程池大小设置过大会怎么样？</strong></p>
+<p>过大主要会增加上下文切换的成本</p>
+<p>什么是上下位切换：</p>
+<p>我们知道，CPU的一个核心在任意一时刻只能被一个线程使用，但在多线程场景下，线程数量是会大于CPU的核心数的。</p>
+<p>为了让每个线程都能正常执行，CPU采用时间片轮用的方式执行线程，当一个线程的时间片用完的时候就会重新处于就绪状态让给其他线程使用，这个过程就属于一次上下文切换。</p>
+<p>切换当前任务时会中断，然后保存此时的状态信息，再转去执行其他线程。<strong>任务从保存到再加载的过程就是一次上下文切换</strong>。</p>
+<p>所以如果线程数设置过大，上下文切换的次数就会变多，导致消耗大量的CPU时间。</p>
 
             </div>
             <hr/>
