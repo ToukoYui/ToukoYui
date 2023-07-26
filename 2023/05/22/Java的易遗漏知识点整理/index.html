@@ -726,6 +726,7 @@ List myList <span class="token operator">=</span> Arrays<span class="token punct
 <li>CachedThreadPool（可缓存线程池）：无核心线程，非核心线程数量无限，任务队列为不存储元素的阻塞队列。适合执行大量但耗时小的任务。</li>
 <li>SingleThreadExecutor（单线程执行器）：只有 1 个核心线程，无非核心线程，执行完立即回收，任务队列为链表结构的有界队列</li>
 </ul>
+<h3 id="19-System-gc"><a href="#19-System-gc" class="headerlink" title="19.System.gc()"></a>19.System.gc()</h3><p>System.gc会触发Full GC，但并不是一定会触发。它只是会提醒jvm需要进行gc，但gc的时机还是由jvm来决定</p>
 <h3 id="待更"><a href="#待更" class="headerlink" title="(待更)"></a>(待更)</h3>
             </div>
             <hr/>
