@@ -432,15 +432,81 @@
                 <h3 id="1-Configuration和-Component的区别？"><a href="#1-Configuration和-Component的区别？" class="headerlink" title="1.@Configuration和@Component的区别？"></a>1.@Configuration和@Component的区别？</h3><p>实际上Configuration本质就是component，Configuration修饰的类中带有Bean注解的方法都会被动态代理，调用时的实例是同一个，而Component每次调用都是新的实例</p>
 <h3 id="2-创建了自定义异常后该如何配置使用？"><a href="#2-创建了自定义异常后该如何配置使用？" class="headerlink" title="2.创建了自定义异常后该如何配置使用？"></a>2.创建了自定义异常后该如何配置使用？</h3><p>需要用@RestControllerAdvice注解添加在一个全局异常拦截器类中，然后@ExceptionHandler里修饰要拦截的异常类型，符合的异常就会拦截后就可以执行该注解下的方法，我们可以在此方法中返回自定义的异常消息以便抛出</p>
 <h3 id="3-Springboot如何执行一个异步任务？"><a href="#3-Springboot如何执行一个异步任务？" class="headerlink" title="3.Springboot如何执行一个异步任务？"></a>3.Springboot如何执行一个异步任务？</h3><p>可以主动创建一个线程来执行；也可以通过@Async注解</p>
-<p>首先要在启动类上添加@EnableAsync开启异步支持，然后将@Async注解加在需要异步执行的方法上，被该注解的方法发返回类型必须是Future类或void。异步方法返回数据时，需要使用<code>Future</code>包装异步任务结果，然后在controller上调用Future的get方法获取数据</p>
+<p>首先要在启动类上添加@EnableAsync开启异步支持，然后将@Async注解加在需要异步执行的方法上</p>
+<blockquote>
+<p>该如何返回异步方法的执行结果呢？</p>
+</blockquote>
+<ol>
+<li>Future接口作方法的返回类型，new一个AsyncResult&lt;&gt;(result)返回，AysncResult类是间接实现了Future接口的（当然你用AysncResult类作返回类型也可以）。AysncResult类是阻塞的，调用者在调用时要等该方法时</li>
+<li>使用CompletableFuture类作方法的返回类型，调用CompletableFuture.completedFuture(result)返回</li>
+</ol>
+<pre class=" language-java"><code class="language-java">    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">testAsyncMethods</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> InterruptedException <span class="token punctuation">{</span>
+        CountDownLatch latch <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CountDownLatch</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        CompletableFuture<span class="token punctuation">.</span><span class="token function">runAsync</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"test1开始执行"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                Thread<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">5000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">InterruptedException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"test1执行完成"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            latch<span class="token punctuation">.</span><span class="token function">countDown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        CompletableFuture<span class="token punctuation">.</span><span class="token function">runAsync</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"test2开始执行"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                Thread<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">InterruptedException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"test2执行完成"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            latch<span class="token punctuation">.</span><span class="token function">countDown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        latch<span class="token punctuation">.</span><span class="token function">await</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+</code></pre>
 <h3 id="4-如何解决跨域问题？"><a href="#4-如何解决跨域问题？" class="headerlink" title="4.如何解决跨域问题？"></a>4.如何解决跨域问题？</h3><p>一开始是使用nginx反向代理的方法，nginx配置文件里设置一个统一的访问路径，nginx接收到路径后根据路径代理到不同的服务接口，但比较麻烦的是需要为每个服务添加@CrossOrigin的注解。后面就改用Spring 网关了，配置CorsWebFilter配置类， 在配置文件里添加需要转发的服务路径就可以了</p>
 <h3 id="5-定时任务怎么实现的？"><a href="#5-定时任务怎么实现的？" class="headerlink" title="5.定时任务怎么实现的？"></a>5.定时任务怎么实现的？</h3><p>专门开了个定时任务的模块，通过@EnableScheduleing注解在类上开启定时，对方法注解@Schedule（cron&#x3D;？？？）进行定时执行发送mq消息调用短信模块的发送手机信息方法</p>
 <h3 id="6-在用到短信服务时是如何配置其密钥这些信息的？"><a href="#6-在用到短信服务时是如何配置其密钥这些信息的？" class="headerlink" title="6.在用到短信服务时是如何配置其密钥这些信息的？"></a>6.在用到短信服务时是如何配置其密钥这些信息的？</h3><p>通过在properties配置文件里先写好对于的配置信息，然后创建一个实现了InitializingBean的组件进行读取，通过@Value给变量赋值</p>
-<h3 id="7-像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？"><a href="#7-像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？" class="headerlink" title="7.像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？"></a>7.像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？</h3><p>不把这些信息上传：</p>
-<ol>
-<li>如果用的是docker-compose，可以单独创建一个docker-compose-override.yaml,在里面专门写上这些私密配置信息，这个文件和docker-compose.yaml是有关系的，如果两个文件中出现同样的配置，override会覆盖，而不一样的信息会合并执行，所以最终直接<code>docker-compose -f docker-compose.yml -f docker-compose.prod.yml up   </code>就可以，上传时把覆盖文件填到gitignore文件里就可以了</li>
-<li>也可以在ini文件中填写私密信息，通过第三方工具包来读取，将ini文件填到gitignore里</li>
-</ol>
+<h3 id="7-像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？"><a href="#7-像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？" class="headerlink" title="7.像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？"></a>7.像密钥这些信息其实是很私密的，你在上传git中是如何保护这些信息的？</h3><p>第一种是使用jasypt (<strong>&#x2F;ʼdʒæsɪpt</strong>&#x2F; )，不让数据明文显示。导入jasypt-spring-boot-starter依赖，创建自定义的password（密钥）使用对私密数据进行加密得到加密后的数据作为配置文件中的配置数据源，并且加上指定的自己的解密密钥，这样springboot在加载注入时就会根据密钥自行解密</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.github.ulisesbocchio<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>jasypt-spring-boot-starter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>3.0.5<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+</code></pre>
+<p>编写一个工具方法来生成密文</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    StandardPBEStringEncryptor basicTextEncryptor <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StandardPBEStringEncryptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    basicTextEncryptor<span class="token punctuation">.</span><span class="token function">setPassword</span><span class="token punctuation">(</span><span class="token string">"你的自定义密钥"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    basicTextEncryptor<span class="token punctuation">.</span><span class="token function">setAlgorithm</span><span class="token punctuation">(</span><span class="token string">"PBEWithMD5AndDES"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    String pwd <span class="token operator">=</span> basicTextEncryptor<span class="token punctuation">.</span><span class="token function">encrypt</span><span class="token punctuation">(</span><span class="token string">"你的私密数据"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 比如得到了 PqWHcF7DiS3Uh6jqyl1i7HSVrUJV0Suv</span>
+</code></pre>
+<p>这时候就可以在配置文件进行以下配置，密钥要用ENC()包裹起来</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token comment" spellcheck="true"># 配置文件</span>
+<span class="token key atrule">jasypt</span><span class="token punctuation">:</span>
+  <span class="token key atrule">encryptor</span><span class="token punctuation">:</span>
+    <span class="token key atrule">password</span><span class="token punctuation">:</span> rin
+    <span class="token key atrule">algorithm</span><span class="token punctuation">:</span> PBEWithMD5AndDES
+    <span class="token key atrule">iv-generator-classname</span><span class="token punctuation">:</span> org.jasypt.iv.NoIvGenerator
+    
+<span class="token key atrule">mypwd</span><span class="token punctuation">:</span> ENC(PqWHcF7DiS3Uh6jqyl1i7HSVrUJV0Suv)
+</code></pre>
+<p>这样就能springboot在启动的时候就会自动读取mypwd，然后根据设置好的配置进行解码注入到变量中</p>
+<blockquote>
+<p>那么这个密钥不还是在这吗？别人看到人家自己不就能解码了？</p>
+<p>所以我们把密钥（rin）添加自己本地系统的环境变量中，配置文件中写环境变量的key，这样就能读取了</p>
+</blockquote>
+<p>第二种是不把这些信息上传：</p>
+<p>如果用的是docker-compose，可以单独创建一个docker-compose-override.yaml,在里面专门写上这些私密配置信息，这个文件和docker-compose.yaml是有关系的，如果两个文件中出现同样的配置，override会覆盖，<strong>而不一样的信息会合并执行</strong>，所以最终直接<code>docker-compose -f docker-compose.yml -f docker-compose.prod.yml up   </code>就可以，上传时把覆盖文件填到gitignore文件里就可以了</p>
 <h3 id="8-Serializable接口的作用？"><a href="#8-Serializable接口的作用？" class="headerlink" title="8.Serializable接口的作用？"></a>8.Serializable接口的作用？</h3><p>类通过实现Serializable接口能够实现序列化或反序列化，当我们需要将内存中的java对象进行传输或存储的时候，就需要将对象进行序列化。</p>
 <p>序列化之后，就可以把序列化后的内容写入磁盘，或者通过网络传输到别的机器上。等要用到的时候将反序列化回Java对象。但这时对象的地址是改变了的</p>
 <h3 id="9-如何通过gitignore在上传时隐藏springboot的application-properties文件？"><a href="#9-如何通过gitignore在上传时隐藏springboot的application-properties文件？" class="headerlink" title="9.如何通过gitignore在上传时隐藏springboot的application.properties文件？"></a>9.如何通过gitignore在上传时隐藏springboot的application.properties文件？</h3><p><strong>有两种情况，区别在于需要设置忽略文件时该文件是否已经提交</strong></p>
@@ -452,6 +518,7 @@
 <ul>
 <li>红色：表明文件未添加</li>
 <li>绿色：表明文件已添加</li>
+<li>蓝色：表明文件已提交，但是内容被修改了</li>
 <li>黄色：表明文件已提交，但是被忽略了</li>
 <li>白色或黑色（视主题而定）：表明文件已提交</li>
 </ul>
@@ -464,6 +531,89 @@
 </li>
 </ul>
 <p>​		如果yml和properties类型同时存在并且配置冲突的话，加载优先级如下： properties &gt; yml &gt; yaml </p>
+<h3 id="11-使用mybatis进行insert操作后希望能直接获取到插入数据的id，该如何实现？"><a href="#11-使用mybatis进行insert操作后希望能直接获取到插入数据的id，该如何实现？" class="headerlink" title="11.使用mybatis进行insert操作后希望能直接获取到插入数据的id，该如何实现？"></a>11.使用mybatis进行insert操作后希望能直接获取到插入数据的id，该如何实现？</h3><p>对于需要新增的数据，如果我们新增的数据中id是自增，并且需要在新增后获取这条新增数据的id值时，可以在<insert>标签中使用useGeneratedKeys &#x3D; “true”和keyProperty &#x3D; “id”这两个属性。</p>
+<ul>
+<li>useGeneratedKeys ：表示如果进行新增操作的表以自增字段为主键，则允许jdbc自动生成主键值，该属性只对insert操作有效</li>
+<li>keyProperty：指定获取的是此java映射对象的某个属性（比如id）</li>
+</ul>
+<p>这两个属性一起用后，在代码中可以这样写就直接获取到新增数据的自增id值，而不需要先insert后再条件查询出id</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">int</span> <span class="token function">insert</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    dao<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span>student<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> student<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<blockquote>
+<p>需要注意的是，要传入新增对象，插入成功后会把ID给setter到对象中</p>
+</blockquote>
+<h3 id="12-Feign能够进行服务间的调用，如果某个服务被客户端调用出现了失败，该怎么办？"><a href="#12-Feign能够进行服务间的调用，如果某个服务被客户端调用出现了失败，该怎么办？" class="headerlink" title="12.Feign能够进行服务间的调用，如果某个服务被客户端调用出现了失败，该怎么办？"></a>12.Feign能够进行服务间的调用，如果某个服务被客户端调用出现了失败，该怎么办？</h3><p>Feign提供了一个熔断机制，使得在调用其他服务请求时，如果被调用的方法出现了异常，Feign客户端能执行指定的方法进行后续处理</p>
+<p>首先在配置文件中开启： <code>feign.hystrix.enabled=true</code></p>
+<p>然后在设置Feign客户端时添加fallback选项，值为XXX（<strong>一个实现了Fegin客户端接口的实现类</strong>）</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@FeignClient</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"service-name"</span><span class="token punctuation">,</span>fallback <span class="token operator">=</span> XXX<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+</code></pre>
+<p>在该实现类重写对应的接口方法，接口方法在Feign客户端中是用来做一个url请求的载体。</p>
+<p>当其他模块的被调用方法出现异常后，就会开始熔断，进入对应调用接口的实现类中进行后续处理</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// Feigin客户端接口</span>
+<span class="token annotation punctuation">@FeignClient</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"user"</span><span class="token punctuation">,</span>url <span class="token operator">=</span> <span class="token string">"${user.url}"</span><span class="token punctuation">,</span>fallback <span class="token operator">=</span> UserFeignFallback<span class="token punctuation">.</span><span class="token keyword">class</span>
+        <span class="token comment" spellcheck="true">/*fallbackFactory = UserFeignFactory.class*/</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">UserFeign</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@PostMapping</span>
+    <span class="token keyword">void</span> <span class="token function">save</span><span class="token punctuation">(</span>User user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+    User <span class="token function">getUserByID</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span><span class="token punctuation">(</span><span class="token string">"id"</span><span class="token punctuation">)</span> String id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@GetMapping</span>
+    List<span class="token operator">&lt;</span>User<span class="token operator">></span> <span class="token function">findAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// Feign客户端接口的实现类</span>
+<span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserFeignFallback</span> <span class="token keyword">implements</span> <span class="token class-name">UserFeign</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">save</span><span class="token punctuation">(</span>User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> User <span class="token function">getUserByID</span><span class="token punctuation">(</span>String id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        User user <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        user<span class="token punctuation">.</span><span class="token function">setId</span><span class="token punctuation">(</span><span class="token string">"100"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        user<span class="token punctuation">.</span><span class="token function">setName</span><span class="token punctuation">(</span><span class="token string">"fallback 回调用户"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> user<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> List<span class="token operator">&lt;</span>User<span class="token operator">></span> <span class="token function">findAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<h3 id="13-关于Mybatis的xml和mapper接口的存放位置"><a href="#13-关于Mybatis的xml和mapper接口的存放位置" class="headerlink" title="13.关于Mybatis的xml和mapper接口的存放位置"></a>13.关于Mybatis的xml和mapper接口的存放位置</h3><p><strong>①xml和mapper存放在不同的目录：</strong></p>
+<p>这种情况文件的存放一般是mapper接口放在java目录下的mapper文件夹；</p>
+<p>xml放在resource文件下，为了能够识别到xml文件，需要在配置文件中写：<code> mybatis.mapper-locations=classpath:mapper/*.xml</code>。</p>
+<p>为了能够扫描到mapper目录下的mapper接口，需要在启动类中通过@MapperScan(“com.xxx.mapper”)。当然也可以在每个mapper接口中加上一个@Mapper接口，这样就不需要在启动类中添加扫描注解了。</p>
+<p><strong>classpath代表哪个目录？</strong></p>
+<p>经过对比，我们要注意到，开发时期的项目里，<code>src/main/</code>下面的<code>java</code>和<code>resources</code>文件夹都被(编译)打包到了生产包的<code>WEB-INF/classes/</code>目录下；而原来WEB-INF下面的views和web.xml则仍然还是在WEB-INF下面。同时由maven引入的依赖都被放入到了<code>WEB-INF/lib/</code>下面。<strong>最后，编译后的class文件和资源文件都放在了classes目录下。</strong></p>
+<p><strong>在编译打包后的项目中，根目录是<code>META-INF</code>和<code>WEB-INF</code> 。这个时候，我们可以看到classes这个文件夹，它就是我们要找的classpath。</strong></p>
+<p><strong>②xml和mapper存放在同一个目录：</strong></p>
+<p>这种情况下xml和mapper接口一般都是存放在Java目录下的mapper文件夹下，</p>
+<p>由于xml在java目录下而不是在resource目录，application.properties中不需要配置这个：<code>mybatis.mapper-locations=classpath:mapper/*.xml</code>了。</p>
+<p>但在idea中，默认情况下是不会去编译src&#x2F;main&#x2F;java下的xml文件的！</p>
+<p>所以需要我们自己配置使得src&#x2F;main&#x2F;java下的xml文件能被编译。在pom.xml的build标签下中添加以下代码：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--资源路径--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>build</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>resources</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>resource</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>directory</span><span class="token punctuation">></span></span>src/main/java<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>directory</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>includes</span><span class="token punctuation">></span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>include</span><span class="token punctuation">></span></span>**/*.xml<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>include</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>includes</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>resource</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>resources</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>build</span><span class="token punctuation">></span></span>
+</code></pre>
 <h3 id="（待更）"><a href="#（待更）" class="headerlink" title="（待更）"></a>（待更）</h3>
             </div>
             <hr/>

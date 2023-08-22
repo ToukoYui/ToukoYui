@@ -428,13 +428,16 @@
 </li>
 <li><p>数据库唯一索引：我们可以为数据表的某些字段设置唯一索引（比如说id字段），让该字段的值唯一。这样如果重复数据提交mysql就会插入失败。</p>
 </li>
-<li><p>Token机制：在用户打开一个新的数据提交页面前，自动发送请求向后端获取该用户的token，并且后端将此token存入redis（可以通过setNX操作）。用户之后的提交请求中都会带上这个token。后端进行insert操作前先检验redis中是否存在这个token，存在则允许insert然后删除redis中的这个token；要是不存在就说明之前已经insert过了，拒绝操作。</p>
+<li><p>防重Token：</p>
+<p>这种方式分成两个阶段：申请token阶段和支付阶段。<br>第一阶段，在进入到提交订单页面之前，需要订单系统根据用户信息向支付系统发起一次申请token的请求，支付系统将token保存到Redis缓存中，为第二阶段支付使用。<br>第二阶段，订单系统拿着申请到的token发起支付请求，支付系统会检查Redis中是否存在该token，如果存在，表示第一次发起支付请求，删除缓存中token后开始支付逻辑处理；如果缓存中不存在，表示非法请求。</p>
 </li>
 </ol>
 </li>
 <li><p>进行数据更新操作：</p>
 <ol>
-<li>乐观锁：给表中加个version字段（int），每次update操作时进行<code>update table set ***,version = #&#123;version&#125;+1 where version = #&#123;version&#125;</code>SQL操作。</li>
+<li><p>乐观锁：</p>
+<p>首先在设计数据库表的时候为会有重复提交问题的表加个version字段，每次获取数据的时候后端会一齐带上version，但前端并不展示。在修改数据的时候带上这个字段，每次update操作时进行<code>update table set ***,version = #&#123;version&#125;+1 where version = #&#123;version&#125;</code>SQL操作，如果是重复提交的话，where条件将会因为第一次提交修改而不成立，修改失败说明这是重复的提交，拒绝。</p>
+</li>
 </ol>
 </li>
 </ul>
@@ -461,7 +464,7 @@
                     </span>
                     <a href="http://example.com" class="b-link-green">流浪秃球计划</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2023/07/15/%E5%B9%82%E7%AD%89%E6%80%A7/" class="b-link-green">如何解决幂等性问题</a>
+                    <a href="/2023/07/15/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%B9%82%E7%AD%89%E6%80%A7%E9%97%AE%E9%A2%98/" class="b-link-green">如何解决幂等性问题</a>
                 </p>
             </div>
         </div>
@@ -487,7 +490,7 @@
                 <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
             </div>
             <div class="card">
-                <a href="/2023/07/15/%E5%B9%82%E7%AD%89%E6%80%A7/">
+                <a href="/2023/07/15/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%B9%82%E7%AD%89%E6%80%A7%E9%97%AE%E9%A2%98/">
                     <div class="card-image">
                         
                         

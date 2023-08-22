@@ -445,13 +445,18 @@
 <blockquote>
 <p>比如无参构造创建后的数组容量为10，长度到达10后，容量扩容为15</p>
 </blockquote>
+<blockquote>
 <p>ArrayList在遍历过程中进行add或remove会发生什么？</p>
-<p>会抛出ConcurrentModificationException异常</p>
+</blockquote>
+<p>这要看你用的是哪种遍历方式：fori 还是 foreach？</p>
+<p>如果是for i ，在删除多个元素的时候可能会漏删或错删，因为fori是用下标来删的，删了后面的元素就会前移，不建议用这种方式。</p>
+<p>如果是foreach，我们知道，foreach其实是语法糖，本质上还是用的迭代器遍历。但在遍历进行remove操作的时候，要注意是调用迭代器的remove方法，而不是arraylist对象的remove方法。</p>
+<p>原因是在ArrayList类中，存在一个remove方法，但是该类还有一个实现了Iterator接口的Itr内部类，Itr类也有一个remove方法。两者的区别是：</p>
 <p>在ArrayList中有个modCount的值，初始为0，表示对集合的修改次数</p>
 <p>在迭代器中存在一个叫expectedModCount的计数变量，它表示对ArrayList修改次数的期望值，它的初始值为modCount，也就是0</p>
-<p>在迭代器进行next方法时会先进行checkForComodification函数片段expectedModCount和modCount是否相等，如果不相等会抛出该异常。遍历时由于修改了（这里的修改是指调用了ArrayList.add&#x2F;remove）会使modCount++，所以在下一次next方法中片段两个变量不符，所以就会报异常.</p>
+<p>在迭代器进行next方法时，会先进入<strong>checkForComodification函数</strong>，判断<strong>expectedModCount</strong>和<strong>modCount</strong>是否相等，如果不相等会抛出该异常。如果是调用的arraylist的remoive方法，modCount++，expectedModCount并不会自增，导致但是迭代器在下一次next方法中发现两个变量不符，所以就会报异常。</p>
 <blockquote>
-<p>但实际上迭代器中同样存在一个remove方法，逻辑和ArrayList中的一样，但是会进行expectedModCount &#x3D; modCount;的复制操作，所以如果在单线程的遍历过程中需要移除元素的话，要使用迭代器遍历，并用迭代器的remove方法。</p>
+<p>但实际上迭代器中的remove方法中还是调用的arraylist的remove方法，逻辑和ArrayList中的一样，但是会进行expectedModCount &#x3D; modCount;的复制操作，所以如果在单线程的遍历过程中需要移除元素的话，要使用迭代器遍历，并用迭代器的remove方法。</p>
 <p>但在多线程的遍历remove中ArrayList就不适用了，那么vector是否可以呢？</p>
 <p>实际上vector也会抛异常，尽管有synchronized修饰加锁，但迭代器是没有加锁的，而且每个线程都会创建一个私有的迭代器，导致expectedModCount也是独立私有的，而modcount是共享的，也是会出现不一致的问题。</p>
 <p>所以最好的解决方法是使用CopyOnWriteArrayList</p>
@@ -532,7 +537,7 @@
 <p><strong>Ⅳ.HashSet与HashMap的关系：</strong></p>
 <blockquote>
 <p> 毕竟是靠HashMap实现的，所以元素是以键：值的形式添加，<strong>k为要添加的元素</strong>，<strong>v为一个空Object【PRESENT】</strong></p>
-<p> PRESENT】在HashMap是被static final修饰的，所以只有一份内存，每个v都是指向这个空对象</p>
+<p> 【PRESENT】在HashMap是被static final修饰的，所以只有一份内存，每个v都是指向这个空对象</p>
 </blockquote>
 <h3 id="2-2-LinkedHashSet类"><a href="#2-2-LinkedHashSet类" class="headerlink" title="2.2 LinkedHashSet类"></a>2.2 LinkedHashSet类</h3><p>LinkedHashSet是HashSet的子类，底层是个LinkedHashMap，本质是个双向链表的数组。</p>
 <p>数组的每个元素都是一条双向链表，但这个双向链表有区别与我们常见的双向链表，因为这种链表的每一个节点上有三个指针：Next、Before、After</p>
@@ -618,15 +623,12 @@
         <span class="token keyword">this</span><span class="token punctuation">.</span>value <span class="token operator">=</span> value<span class="token punctuation">;</span>
         <span class="token keyword">this</span><span class="token punctuation">.</span>next <span class="token operator">=</span> next<span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
+    
+     <span class="token keyword">public</span> <span class="token keyword">final</span> K <span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span>        <span class="token punctuation">{</span> <span class="token keyword">return</span> key<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+     <span class="token keyword">public</span> <span class="token keyword">final</span> V <span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span>      <span class="token punctuation">{</span> <span class="token keyword">return</span> value<span class="token punctuation">;</span> <span class="token punctuation">}</span>
 </code></pre>
-<p>那已经存在了Node，为什么还要用新的Map.Entry来指向Node呢？</p>
-<p>因为相较于Node，Map.Entry接口中还有两个抽象方法：getKey（）和getValue（）</p>
-<pre class=" language-java"><code class="language-java"><span class="token keyword">interface</span> <span class="token class-name">Entry</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span> V<span class="token operator">></span> <span class="token punctuation">{</span>
-    K <span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    V <span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-</code></pre>
-<p>这两个方法Node是没有的，Map.Entry能够通过这两个get方法直接获取到这个键值对的键和值，这也就是为什么说 <strong>设计EntrySet这个类的目的就是为了方便遍历散列表</strong>。</p>
+<p>那已经存在了Node，为什么还要用Map.Entry来指向Node呢？</p>
+<p>因为相较于Node，Map.Entry接口中这也就是为什么说 <strong>设计EntrySet这个类的目的就是为了方便遍历散列表</strong>。</p>
 <blockquote>
 <p>除此之外，HashMap中还存在一个keySet（）方法可以得到key的Set集合，一个values（）可以得到vaule的Collection集合</p>
 </blockquote>
