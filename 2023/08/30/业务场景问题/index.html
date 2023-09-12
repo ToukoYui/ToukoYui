@@ -4,8 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="标签: Android, 流浪秃球计划">
-    <meta name="description" content="标签: Android | 流浪秃球计划">
+    <meta name="keywords" content="业务场景问题, 流浪秃球计划">
+    <meta name="description" content="1.MySQL主从复制读写分离后，主从之间存在延迟，从库读到了旧数据怎么办？
+读写分离中间件：使用专门的读写分离中间件，如MySQL Proxy或MaxScale等，这些中间件可以监控主从延迟，如果达到延迟阈值则将读操作路由到主库或最新的从">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,7 +14,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>标签: Android | 流浪秃球计划</title>
+    <title>业务场景问题 | 流浪秃球计划</title>
     <link rel="icon" type="image/png" href="/medias/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -283,246 +284,307 @@
     </nav>
 </header>
 
-<div class="bg-cover  about-cover" style="background-image: url('/medias/cover.jpg')">
+
+
+
+
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/4.jpg')">
     <div class="container">
         <div class="row">
-            <div class="col s10 offset-s1 m8 offset-m2 l8 offset-l2">
+            <div class="col s12 m12 l12">
                 <div class="brand">
-                    <div class="title center-align">
-                    
-                        前进吧
-                    
-                    </div>
-
-                    <div class="description center-align">
-                    
-                        I hope you can find the meaning of your life.
-                    
+                    <div class="description center-align post-title">
+                        业务场景问题
                     </div>
                 </div>
             </div>
         </div>
-        
     </div>
 </div>
 
-<script>
-// Dynamically switch banner pictures every day.
-$('.bg-cover').css('background-image', 'url(/medias/banner/' + new Date().getDay() + '.jpg)');
-//$('.bg-cover').css('background-image', 'url(/medias/banner/' + Math.floor(Math.random()*7) + '.jpg)');
-</script>
 
-<main class="content">
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+</style>
+<div class="row">
+    <div class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                          <div class="article-tag">
+                            <span class="chip bg-color">无标签</span>
+                          </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2023-08-30
+                </div>
+
+                
+				
+				
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="fa fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h3 id="1-MySQL主从复制读写分离后，主从之间存在延迟，从库读到了旧数据怎么办？"><a href="#1-MySQL主从复制读写分离后，主从之间存在延迟，从库读到了旧数据怎么办？" class="headerlink" title="1.MySQL主从复制读写分离后，主从之间存在延迟，从库读到了旧数据怎么办？"></a>1.MySQL主从复制读写分离后，主从之间存在延迟，从库读到了旧数据怎么办？</h3><ul>
+<li>读写分离中间件：使用专门的读写分离中间件，如MySQL Proxy或MaxScale等，这些中间件可以监控主从延迟，如果达到延迟阈值则将读操作路由到主库或最新的从库上，以确保读取到正确的数据。</li>
+<li>异步通知机制：在写入操作完成后，可以通过异步通知机制，例如消息队列或触发异步任务，通知相关的读取操作已经可以进行。这样读取操作将在主从同步完成后再执行，以确保读取到最新的数据。</li>
+</ul>
+
+            </div>
+            <hr/>
+
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            <div class="reprint">
+                <p>
+                    <span class="reprint-tip">
+                        <i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;转载请注明:
+                    </span>
+                    <a href="http://example.com" class="b-link-green">流浪秃球计划</a>
+                    <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
+                    <a href="/2023/08/30/%E4%B8%9A%E5%8A%A1%E5%9C%BA%E6%99%AF%E9%97%AE%E9%A2%98/" class="b-link-green">业务场景问题</a>
+                </p>
+            </div>
+        </div>
+    </div>
 
     
 
-<div id="tags" class="container chip-container">
-    <div class="card">
-        <div class="card-content">
-            <div class="tag-title center-align">
-                <i class="fa fa-tags"></i>&nbsp;&nbsp;文章标签
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
             </div>
-            <div class="tag-chips">
-                
-                
-                <a href="/tags/gateway/" title="gateway: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="gateway" style="background-color: #F9EBEA;">gateway
-                        <span class="tag-length">1</span>
-                    </span>
+            <div class="card">
+                <a href="/2023/08/30/%E4%B8%9A%E5%8A%A1%E5%9C%BA%E6%99%AF%E9%97%AE%E9%A2%98/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="业务场景问题">
+                        
+                        <span class="card-title">业务场景问题</span>
+                    </div>
                 </a>
-                
-                
-                <a href="/tags/Springboot/" title="Springboot: 5">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="Springboot" style="background-color: #F5EEF8;">Springboot
-                        <span class="tag-length">5</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/Java/" title="Java: 12">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="Java" style="background-color: #D5F5E3;">Java
-                        <span class="tag-length">12</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/Android/" title="Android: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-active "
-                            data-tagname="Android" style="background-color: #E8F8F5;">Android
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/JVM/" title="JVM: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="JVM" style="background-color: #FEF9E7;">JVM
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/Https/" title="Https: 2">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="Https" style="background-color: #F8F9F9;">Https
-                        <span class="tag-length">2</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/%E8%AE%A1%E7%BD%91/" title="计网: 5">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="计网" style="background-color: #82E0AA;">计网
-                        <span class="tag-length">5</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/IP/" title="IP: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="IP" style="background-color: #D7BDE2;">IP
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/JJWT/" title="JJWT: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="JJWT" style="background-color: #A3E4D7;">JJWT
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/%E9%89%B4%E6%9D%83/" title="鉴权: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="鉴权" style="background-color: #85C1E9;">鉴权
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/Redis/" title="Redis: 2">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="Redis" style="background-color: #F8C471;">Redis
-                        <span class="tag-length">2</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/mysql/" title="mysql: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="mysql" style="background-color: #F9E79F;">mysql
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/%E5%8F%8D%E5%B0%84/" title="反射: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="反射" style="background-color: #D5F5E3;">反射
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/%E7%BA%BF%E7%A8%8B%E5%B9%B6%E5%8F%91/" title="线程并发: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="线程并发" style="background-color: #F8F9F9;">线程并发
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/%E9%9B%86%E5%90%88/" title="集合: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="集合" style="background-color: #D5F5E3;">集合
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/Reggie/" title="Reggie: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="Reggie" style="background-color: #F8C471;">Reggie
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" title="多线程: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="多线程" style="background-color: #FEF9E7;">多线程
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
+                <div class="card-content article-content">
+                    <div class="summary">1.MySQL主从复制读写分离后，主从之间存在延迟，从库读到了旧数据怎么办？
+读写分离中间件：使用专门的读写分离中间件，如MySQL Proxy或MaxScale等，这些中间件可以监控主从延迟，如果达到延迟阈值则将读操作路由到主库或最新的从</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2023-08-30
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-user fa-fw"></i>
+                            Touko
+                            
+                        </span>
+                    </div>
+                </div>
+
                 
             </div>
         </div>
-    </div>
-</div>
-
-    <div class="container">
         
-
-        <article>
-            <div class="row tags-posts">
-                
-                
-                <div class="article tag-post col s12 m6 l4" data-tags="Java, Android" data-aos="fade-up">
-                    <div class="card">
-                        <a href="/2023/03/21/Android/">
-                            <div class="card-image tag-image">
-                                
-                                
-                                <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Android笔记">
-                                
-                                <span class="card-title">Android笔记</span>
-                            </div>
-                        </a>
-                        <div class="card-content article-content">
-                            <div class="publish-info">
-                                <span class="publish-date">
-                                    <i class="fa fa-clock-o fa-fw icon-date"></i>2023-03-21
-                                </span>
-                                <span class="publish-author">
-                                    
-                                    <i class="fa fa-bookmark fa-fw icon-category"></i>
-                                    
-                                    <a href="/categories/Android/" class="post-category" target="_blank">
-                                    Android
-                                    </a>
-                                    
-                                    
-                                </span>
-                            </div>
-                        </div>
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2023/07/15/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%B9%82%E7%AD%89%E6%80%A7%E9%97%AE%E9%A2%98/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="如何解决幂等性问题">
+                        
+                        <span class="card-title">如何解决幂等性问题</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">什么是幂等性？
+定义：对某个资源进行一次或多次请求后，产生的结果都是一样的。
+常见的例子就是前端的表单提交时进行的POST请求，正常预想就是用户填写资料，点击了一次按钮，后端接收后数据库进行一个insert操作。
+但试想一下，如果这时我们没</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2023-07-15
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-user fa-fw"></i>
+                            Touko
+                            
+                        </span>
                     </div>
                 </div>
                 
             </div>
-        </article>
+        </div>
+        
     </div>
+</article>
+</div>
+
+
+    </div>
+    <div class="col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+    });
+</script>
+    
+
 </main>
 
 

@@ -514,6 +514,33 @@
 </ol>
 <h3 id="8-Controller和-RestController的区别？"><a href="#8-Controller和-RestController的区别？" class="headerlink" title="8.@Controller和@RestController的区别？"></a>8.@Controller和@RestController的区别？</h3><p>@Controller注解的方法下返回的字符串类型的页面路径</p>
 <p>@RestController相当于是@Controller和@ResponseBody的结合，因此RestController注解的方法返回的是一个实体对象，前端获得的通常是json对象</p>
+<h3 id="9-Spring中有两个id相同的bean对象会报错吗"><a href="#9-Spring中有两个id相同的bean对象会报错吗" class="headerlink" title="9.Spring中有两个id相同的bean对象会报错吗?"></a>9.Spring中有两个id相同的bean对象会报错吗?</h3><p>在spring同一个配置文件中，不能存在id相同的两个bean，否则会报错。</p>
+<p>在spring同一个配置文件中，不能存在id相同的两个bean，否则会报错。因为ioc容器在加载相同id的bean的时候，后加载的会覆盖先加载的bean。</p>
+<p>实际上在Spring 3.X版本后，开始使用注解，而注入Bean的注解有@Resource和@Autowire两种。</p>
+<p>前者按名字注入，如果找不到则按类型注入；后者按类型注入。</p>
+<p>假设现在有两个Bean：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">class</span> <span class="token class-name">MyClass</span><span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Bean</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"user_service"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> ServiceA <span class="token function">bean1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//省略</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Bean</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"user_service"</span><span class="token punctuation">)</span>
+    punlic ServiceB <span class="token function">bean2</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//省略</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>然后尝试在userService类中注入：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Resource</span><span class="token punctuation">(</span><span class="token string">"user_service"</span><span class="token punctuation">)</span>
+<span class="token keyword">private</span> ServiceA servicea<span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Resource</span><span class="token punctuation">(</span><span class="token string">"user_service"</span><span class="token punctuation">)</span>
+<span class="token keyword">private</span> ServiceB serviceb<span class="token punctuation">;</span>
+</code></pre>
+<p>如果我们在同一个配置类里面声明多个相同名字的bean，在Spring IOC容器中只会注册第一个声明的Bean的实例。</p>
+<p>后续重复名字的Bean就不会再注册了。</p>
+<p>如果使用Resource注解，它是先根据名字来注入的，所以ioc拿的是ServiceA，这时给第二个注入的话就会发生类型转换的异常；如果使用Autowire注解，它是根据类型注入的，这时ioc只存在SerciceA类型的bean，所以会报类不存在的异常。</p>
 <h3 id="（待更）"><a href="#（待更）" class="headerlink" title="（待更）"></a>（待更）</h3>
             </div>
             <hr/>
